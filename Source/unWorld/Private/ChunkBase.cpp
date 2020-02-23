@@ -23,6 +23,13 @@ AChunkBase::AChunkBase()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+TArray<int32> AChunkBase::calculateNosie_Implementation()
+{
+	TArray<int32> aa;
+	aa.SetNum(chunkLineElementsP2);
+	return aa;
+}
+
 // Called when the game starts or when spawned
 void AChunkBase::BeginPlay()
 {
@@ -36,23 +43,6 @@ void AChunkBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
-//void AChunkBase::DisconnectNeighbors()
-//{
-//	for (int i = 0; i < 6; i++)
-//	{
-//		if (NeighborChunks.IsValidIndex(i))
-//		{
-//			//NeighborChunks[i].NeighborChunks[(int)(((AdjacentDirection)i).ChunkOpposite())] = NULL;
-//			//NeighborChunks[i] = NULL;
-//		}
-//	}
-//}
-//
-//EBlockType AChunkBase::GetBlockType(int x, int y, int z)
-//{
-//	return EBlockType();
-//}
 
 void AChunkBase::OnConstruction(const FTransform& Transform)
 {
@@ -80,6 +70,7 @@ void AChunkBase::GenerateChunk()
 {
 	chunkFields.SetNumUninitialized(chunkTotalElements);
 
+	TArray<int32> noise = calculateNosie();
 
 	for (int32 x= 0;x<chunkElements;x++)
 	{
@@ -89,7 +80,7 @@ void AChunkBase::GenerateChunk()
 			{
 				int32 index = x + (y * chunkElements) +(z * chunkLineElementsP2);
 
-				chunkFields[index] = (z < 30) ? 1 : 0;
+				chunkFields[index] = (z < 30 + noise[x + y * chunkElements]) ? 1 : 0;
 
 			}
 		}

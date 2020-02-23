@@ -12,7 +12,13 @@ public class unWorld : ModuleRules
 
 		PrivateDependencyModuleNames.AddRange(new string[]{
 			"VictoryBPLibrary",
-			"VoxelWorld"
+			//"VoxelWorld",
+			//"SimplexNoise",
+			"ProceduralMeshComponent"
+		});
+		PrivateIncludePaths.AddRange(new string[]
+		{
+			"SimplexNoise/Private"
 		});
 	}
 }

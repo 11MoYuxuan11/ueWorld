@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ProceduralMeshComponent.h"
-//#include "SimplexNoiseBPLibrary.h"
+#include "GridBase.h"
 #include "ChunkBase.generated.h"
 
 UCLASS()
@@ -17,18 +17,46 @@ public:
 	// Sets default values for this actor's properties
 	AChunkBase();
 
-	//static TArray<AChunkBase*> chunks;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<UMaterialInterface*> Materials;
 
-	static const int width = 30;
-	static const int height = 30;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
+		int32 rabdinSeed = 0;
 
-	float baseHeight = 10.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
+		int32 voxelSize = 200;
 
-	float frequency = 0.025f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
+		int32 chunkElements = 10;
 
-	float amplitude = 1.f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
+		int32 chunkXindex = 0;
 
-	TMap<FVector,EBlockType*>  map;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
+		int32 chunkYindex = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float xMult = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float yMult = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float zMult = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float weight = 1;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float freq = 1;
+
+	UPROPERTY()
+		int32 chunkTotalElements;
+	UPROPERTY()
+		int32 chunkZElements;
+	UPROPERTY()
+		int32 chunkLineElementsP2;
+	UPROPERTY()
+		int32 voxelSizeHalf;
+
+	UPROPERTY()
+		TArray<int32> chunkFields;
 
 	UPROPERTY()
 		UProceduralMeshComponent* proceduralComponent;
@@ -41,12 +69,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void InitMap();
+	virtual void OnConstruction(const FTransform& Transform) override;
+
+	void GenerateChunk();
+
+	void UpdateMesh();
 
 private:
 
-	EBlockType GenerateBlockType(FVector wPos);
-	int GenerateHeight(FVector wPos);
+	//EBlockType GenerateBlockType(FVector wPos);
+	//int GenerateHeight(FVector wPos);
+	
 };
 
 UENUM(BlueprintType)

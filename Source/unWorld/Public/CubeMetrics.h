@@ -16,11 +16,19 @@ class UNWORLD_API UCubeMetrics : public UBlueprintFunctionLibrary
 
 public:
 	
-	static TArray<FVector> cubeVertex;
-	
 	UFUNCTION(BlueprintCallable)
-	static FVector WorldPostion2CubePosition(FVector position, float CUBE_SIDE_LENGTH, int CHUNK_WIDTH);
+	static FVector WorldPostion2CubePosition(FVector position, float CUBE_SIDE_LENGTH);
 
+	UFUNCTION(BlueprintCallable)
+	static FVector WorldPostion2ChunkPosition(FVector position, float CUBE_SIDE_LENGTH, int CHUNK_WIDTH);
+};
 
-
+enum class AdjacentDirection
+{
+	front,
+	back,
+	left,
+	right,
+	up,
+	down
 };

@@ -228,4 +228,11 @@ void AChunkBase::UpdateMesh()
 	proceduralComponent->ClearAllMeshSections();
 	proceduralComponent->CreateMeshSection(0,Vertices,Triangles,Normals,UVs,VertexColor,Tangents,true);
 
+	int s = 0;
+	while (s < Materials.Num())
+	{
+		proceduralComponent->SetMaterial(s, Materials[s]);
+		s++;
+	}
+
 }

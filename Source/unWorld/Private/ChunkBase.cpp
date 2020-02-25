@@ -3,7 +3,6 @@
 
 #include "ChunkBase.h"
 
-
 const int32 bTriangles[] = {2,1,0,0,3,2};
 const FVector2D bUVs[] = {FVector2D(0.0,0.0),FVector2D(0.0,1.0) ,FVector2D(1.0,1.0) ,FVector2D(1.0,0.0) };
 
@@ -28,6 +27,38 @@ TArray<int32> AChunkBase::calculateNosie_Implementation()
 	TArray<int32> aa;
 	aa.SetNum(chunkLineElementsP2);
 	return aa;
+}
+
+int AChunkBase::generateHeight_Implementation()
+{
+	return 0;
+}
+
+void AChunkBase::Initmap()
+{
+	//offset0 = FVector(Random.value * 1000, Random.value * 1000, Random.value * 1000);
+	//offset1 = FVector(Random.value * 1000, Random.value * 1000, Random.value * 1000);
+	//offset2 = FVector(Random.value * 1000, Random.value * 1000, Random.value * 1000);
+
+	//初始化Map
+	//map = new BlockType[width, height, width];
+
+	//遍历map，生成其中每个Block的信息
+	for (int x = 0; x < chunkElements; x++)
+	{
+		for (int y = 0; y < chunkElements; y++)
+		{
+			for (int z = 0; z < chunkZElements; z++)
+			{
+				int32 index = x + (y * chunkElements) + (z * chunkLineElementsP2);
+				auto wPos = FVector(x, y, z) + this->GetActorLocation();
+				chunkFields[index] = (int)GenerateBlockType(wPos.X, wPos.Y,wPos.Z);
+			}
+		}
+	}
+
+	//根据生成的信息，Build出Chunk的网格
+	BuildChunk();
 }
 
 // Called when the game starts or when spawned
@@ -61,9 +92,9 @@ void AChunkBase::OnConstruction(const FTransform& Transform)
 
 	Super::OnConstruction(Transform);
 
-	GenerateChunk();
-	UpdateMesh();
-
+	//GenerateChunk();
+	//UpdateMesh();
+	Initmap();
 }
 
 void AChunkBase::GenerateChunk()
@@ -235,4 +266,180 @@ void AChunkBase::UpdateMesh()
 		s++;
 	}
 
+}
+
+void AChunkBase::BuildChunk()
+{
+	TArray<FVector> Vertices;
+	TArray<int32> Triangles;
+	TArray<FVector> Normals;
+	TArray<FVector2D> UVs;
+	TArray<FProcMeshTangent> Tangents;
+	TArray<FColor> VertexColor;
+
+	for (int x = 0;x< chunkElements;x++)
+	{
+		for (int y = 0; y < chunkElements; x++)
+		{
+			for (int z = 0;z < chunkZElements; z++)
+			{
+				BuildBlock(x,y,z, Vertices ,UVs , Triangles);
+			}
+		}
+	}
+
+	proceduralComponent->ClearAllMeshSections();
+	proceduralComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, VertexColor, Tangents, true);
+
+	int s = 0;
+	while (s < Materials.Num())
+	{
+		proceduralComponent->SetMaterial(s, Materials[s]);
+		s++;
+	}
+
+}
+
+void AChunkBase::BuildBlock(int x, int y, int z, TArray<FVector> verts, TArray<FVector2D> uvs, TArray<int> tris)
+{
+	if (GetChunkFieldByVector(x, y, z) == 0) return;
+	
+	EBlockType blockType = GetBlockType(x,y,z);
+
+	//Left
+	if (CheckNeedBuildFace(x - 1, y, z))
+		BuildFace(blockType, FVector(x, y, z), FVector::UpVector, FVector::ForwardVector, false, verts, uvs, tris);
+	//Right
+	if (CheckNeedBuildFace(x + 1, y, z))
+		BuildFace(blockType, FVector(x + 1, y, z), FVector::UpVector, FVector::ForwardVector, true, verts, uvs, tris);
+
+	//Bottom
+	if (CheckNeedBuildFace(x, y - 1, z))
+		BuildFace(blockType, FVector(x, y, z), FVector::ForwardVector, FVector::RightVector, false, verts, uvs, tris);
+	//Top
+	if (CheckNeedBuildFace(x, y + 1, z))
+		BuildFace(blockType, FVector(x, y + 1, z), FVector::ForwardVector, FVector::RightVector, true, verts, uvs, tris);
+
+	//Back
+	if (CheckNeedBuildFace(x, y, z - 1))
+		BuildFace(blockType, FVector(x, y, z), FVector::UpVector, FVector::RightVector, true, verts, uvs, tris);
+	//Front
+	if (CheckNeedBuildFace(x, y, z + 1))
+		BuildFace(blockType, FVector(x, y, z + 1), FVector::UpVector, FVector::RightVector, false, verts, uvs, tris);
+}
+
+bool AChunkBase::CheckNeedBuildFace(int x, int y, int z)
+{
+	if (y < 0) return false;
+	auto type = GetBlockType(x,y,z);
+
+	switch (type)
+	{
+		case EBlockType::None:
+			return true;
+		default:
+			return false;
+	}
+}
+
+int32 AChunkBase::GetChunkFieldByVector(int x, int y, int z)
+{
+	return chunkFields[x + y * chunkElements + z * chunkLineElementsP2];
+}
+
+EBlockType AChunkBase::GetBlockType(int x, int y, int z) {
+	return (EBlockType)GetChunkFieldByVector(x,y,z);
+}
+
+EBlockType AChunkBase::GenerateBlockType(int x, int y, int z)
+{
+	////z坐标是否在Chunk内
+	//if (z >= chunkZElements)
+	//{
+	//	return EBlockType::None;
+	//}
+
+	////获取当前位置方块随机生成的高度值
+	////float genHeight = GenerateHeight(wPos);
+
+	////当前方块位置高于随机生成的高度值时，当前方块类型为空
+	//if (y > genHeight)
+	//{
+	//	return EBlockType::None;
+	//}
+	////当前方块位置等于随机生成的高度值时，当前方块类型为草地
+	//else if (y == genHeight)
+	//{
+	//	return EBlockType::Grass;
+	//}
+	////当前方块位置小于随机生成的高度值 且 大于 genHeight - 5时，当前方块类型为泥土
+	//else if (y < genHeight && y > genHeight - 5)
+	//{
+	//	return EBlockType::Dirt;
+	//}
+	////其他情况，当前方块类型为碎石
+	//return EBlockType::Gravel;
+	return EBlockType::None;
+}
+
+int AChunkBase::GenerateHeight(int x, int y, int z)
+{
+	//让随机种子，振幅，频率，应用于我们的噪音采样结果
+	//float x0 = (x + offset0.x) * frequency;
+	//float y0 = (y + offset0.y) * frequency;
+	//float z0 = (z + offset0.z) * frequency;
+
+	//float x1 = (x + offset1.x) * frequency * 2;
+	//float y1 = (y + offset1.y) * frequency * 2;
+	//float z1 = (z + offset1.z) * frequency * 2;
+
+	//float x2 = (x + offset2.x) * frequency / 4;
+	//float y2 = (y + offset2.y) * frequency / 4;
+	//float z2 = (z + offset2.z) * frequency / 4;
+
+	//float noise0 = Noise.Generate(x0, y0, z0) * amplitude;
+	//float noise1 = Noise.Generate(x1, y1, z1) * amplitude / 2;
+	//float noise2 = Noise.Generate(x2, y2, z2) * amplitude / 4;
+
+	////在采样结果上，叠加上baseHeight，限制随机生成的高度下限
+	//return FMathf.Floor(noise0 + noise1 + noise2 + baseHeight);
+	return 0;
+}
+
+void AChunkBase::BuildFace(EBlockType blocktype, FVector corner, FVector up, FVector right, 
+		bool reversed, TArray<FVector> verts, TArray<FVector2D> uvs, TArray<int> tris) {
+	int index = verts.Num();
+
+	verts.Add(corner);
+	verts.Add(corner + up);
+	verts.Add(corner + up + right);
+	verts.Add(corner + right);
+
+	FVector2D uvWidth = FVector2D(0.25f, 0.25f);
+	FVector2D uvCorner = FVector2D(0.00f, 0.75f);
+
+	uvCorner.X += (float)((int)blocktype - 1) / 4;
+	uvs.Add(uvCorner);
+	uvs.Add(FVector2D(uvCorner.X, uvCorner.Y + uvWidth.Y));
+	uvs.Add(FVector2D(uvCorner.X + uvWidth.X, uvCorner.Y + uvWidth.Y));
+	uvs.Add(FVector2D(uvCorner.X + uvWidth.X, uvCorner.Y));
+
+	if (reversed)
+	{
+		tris.Add(index + 0);
+		tris.Add(index + 1);
+		tris.Add(index + 2);
+		tris.Add(index + 2);
+		tris.Add(index + 3);
+		tris.Add(index + 0);
+	}
+	else
+	{
+		tris.Add(index + 1);
+		tris.Add(index + 0);
+		tris.Add(index + 2);
+		tris.Add(index + 3);
+		tris.Add(index + 2);
+		tris.Add(index + 0);
+	}
 }

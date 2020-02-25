@@ -30,13 +30,13 @@ FVector UCubeMetrics::WorldPostion2CubePosition(FVector position,float CUBE_SIDE
 	FVector resut = FVector::ZeroVector;
 
 	resut.X = position.X >= 0 ?
-		(int)(position.X / CUBE_SIDE_LENGTH) * CUBE_SIDE_LENGTH + 0.5f * CUBE_SIDE_LENGTH :
+		(int)(position.X / CUBE_SIDE_LENGTH) * CUBE_SIDE_LENGTH + 0.5f * CUBE_SIDE_LENGTH:
 		(int)(position.X / CUBE_SIDE_LENGTH) * CUBE_SIDE_LENGTH - 0.5f * CUBE_SIDE_LENGTH;
 	resut.Y = position.Y >= 0 ?
-		(int)(position.Y / CUBE_SIDE_LENGTH) * CUBE_SIDE_LENGTH + 0.5f * CUBE_SIDE_LENGTH :
+		(int)(position.Y / CUBE_SIDE_LENGTH) * CUBE_SIDE_LENGTH + 0.5f * CUBE_SIDE_LENGTH:
 		(int)(position.Y / CUBE_SIDE_LENGTH) * CUBE_SIDE_LENGTH - 0.5f * CUBE_SIDE_LENGTH;
 	resut.Z = position.Z >= 0 ?
-		(int)(position.Z / CUBE_SIDE_LENGTH) * CUBE_SIDE_LENGTH + 0.5f * CUBE_SIDE_LENGTH :
+		(int)(position.Z / CUBE_SIDE_LENGTH) * CUBE_SIDE_LENGTH + 0.5f * CUBE_SIDE_LENGTH:
 		(int)(position.Z / CUBE_SIDE_LENGTH) * CUBE_SIDE_LENGTH - 0.5f * CUBE_SIDE_LENGTH;
 
 	return resut;

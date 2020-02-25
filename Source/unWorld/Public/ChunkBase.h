@@ -45,6 +45,14 @@ public:
 		float weight = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float freq = 1;
+	
+	UPROPERTY(BlueprintReadOnly)
+	FVector offset0;
+	UPROPERTY(BlueprintReadOnly)
+	FVector offset1;
+	UPROPERTY(BlueprintReadOnly)
+	FVector offset2;
+
 
 	UPROPERTY()
 		int32 chunkTotalElements;
@@ -56,7 +64,7 @@ public:
 		int32 voxelSizeHalf;
 
 	UPROPERTY()
-		TArray<int32> chunkFields;
+	TArray<int32> chunkFields;
 
 	UPROPERTY()
 		UProceduralMeshComponent* proceduralComponent;
@@ -64,7 +72,14 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	TArray<int32> calculateNosie();
 
+	UFUNCTION(BlueprintNativeEvent)
+	int generateHeight();
+
 	virtual TArray<int32> calculateNosie_Implementation();
+
+	virtual int generateHeight_Implementation();
+
+	void Initmap();
 
 protected:
 	// Called when the game starts or when spawned
@@ -80,11 +95,24 @@ public:
 
 	void UpdateMesh();
 
+	void BuildChunk();
+
 private:
 
 	//EBlockType GenerateBlockType(FVector wPos);
 	//int GenerateHeight(FVector wPos);
-	
+	void BuildBlock(int x, int y, int z, TArray<FVector> verts, TArray<FVector2D> uvs, TArray<int> tris);
+	void BuildFace(EBlockType blocktype, FVector corner, FVector up, FVector right,
+		bool reversed, TArray<FVector> verts, TArray<FVector2D> uvs, TArray<int> tris);
+
+	bool CheckNeedBuildFace(int x,int y,int z);
+	int32 GetChunkFieldByVector(int x, int y, int z);
+
+	EBlockType GetBlockType(int x, int y, int z);
+
+	EBlockType GenerateBlockType(int x, int y ,int z);
+
+	int GenerateHeight(int x, int y ,int z);
 };
 
 UENUM(BlueprintType)

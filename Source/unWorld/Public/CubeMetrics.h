@@ -23,7 +23,7 @@ public:
 	static FVector WorldPostion2ChunkPosition(FVector position, float CUBE_SIDE_LENGTH, int CHUNK_WIDTH);
 };
 
-UENUM(BlueprintType)
+UENUM()
 enum class AdjacentDirection
 {
 	front,
@@ -34,7 +34,7 @@ enum class AdjacentDirection
 	down
 };
 
-UENUM(BlueprintType)
+UENUM()
 enum class CubeSurface {
 	front,
 	right,

@@ -3,6 +3,28 @@
 
 #include "CubeMetrics.h"
 
+const FVector cubeVertex[] = {
+	//上面四个顶点
+	FVector(-0.5f,0.5f,0.5f),
+	//右上
+	FVector(0.5f,0.5f,0.5f),
+	//右下
+	FVector(0.5f,0.5f,-0.5f),
+	//左下
+	FVector(-0.5f,0.5f,-0.5f),
+	//下面四个顶点
+	//左上
+	FVector(-0.5f,-0.5f,0.5f),
+	//右上
+	FVector(0.5f,-0.5f,0.5f),
+	//右下
+	FVector(0.5f,-0.5f,-0.5f),
+	//左下
+	FVector(-0.5f,-0.5f,-0.5f)
+};
+
+
+
 FVector UCubeMetrics::WorldPostion2CubePosition(FVector position,float CUBE_SIDE_LENGTH)
 {
 	FVector resut = FVector::ZeroVector;

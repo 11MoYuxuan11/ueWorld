@@ -22,45 +22,6 @@ AChunkBase::AChunkBase()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
-TArray<int32> AChunkBase::calculateNosie_Implementation()
-{
-	TArray<int32> aa;
-	aa.SetNum(chunkLineElementsP2);
-	return aa;
-}
-
-int AChunkBase::generateHeight_Implementation()
-{
-	return 0;
-}
-
-void AChunkBase::Initmap()
-{
-	//offset0 = FVector(Random.value * 1000, Random.value * 1000, Random.value * 1000);
-	//offset1 = FVector(Random.value * 1000, Random.value * 1000, Random.value * 1000);
-	//offset2 = FVector(Random.value * 1000, Random.value * 1000, Random.value * 1000);
-
-	//初始化Map
-	//map = new BlockType[width, height, width];
-
-	//遍历map，生成其中每个Block的信息
-	for (int x = 0; x < chunkElements; x++)
-	{
-		for (int y = 0; y < chunkElements; y++)
-		{
-			for (int z = 0; z < chunkZElements; z++)
-			{
-				int32 index = x + (y * chunkElements) + (z * chunkLineElementsP2);
-				auto wPos = FVector(x, y, z) + this->GetActorLocation();
-				chunkFields[index] = (int)GenerateBlockType(wPos.X, wPos.Y,wPos.Z);
-			}
-		}
-	}
-
-	//根据生成的信息，Build出Chunk的网格
-	BuildChunk();
-}
-
 // Called when the game starts or when spawned
 void AChunkBase::BeginPlay()
 {
@@ -94,6 +55,7 @@ void AChunkBase::OnConstruction(const FTransform& Transform)
 
 	//GenerateChunk();
 	//UpdateMesh();
+
 	Initmap();
 }
 
@@ -111,7 +73,7 @@ void AChunkBase::GenerateChunk()
 			{
 				int32 index = x + (y * chunkElements) +(z * chunkLineElementsP2);
 
-				chunkFields[index] = (z < 30 + noise[x + y * chunkElements]) ? 1 : 0;
+				chunkFields[index] = ((z < 30 + noise[x + y * chunkElements]) ? 1 : 0);
 
 			}
 		}
@@ -122,12 +84,12 @@ void AChunkBase::GenerateChunk()
 void AChunkBase::UpdateMesh()
 {
 	
-	TArray<FVector> Vertices;
-	TArray<int32> Triangles;
-	TArray<FVector> Normals;
-	TArray<FVector2D> UVs;
-	TArray<FProcMeshTangent> Tangents;
-	TArray<FColor> VertexColor;
+	//TArray<FVector> Vertices;
+	//TArray<int32> Triangles;
+	//TArray<FVector> Normals;
+	//TArray<FVector2D> UVs;
+	//TArray<FProcMeshTangent> Tangents;
+	//TArray<FColor> VertexColor;
 
 	int32 elementID = 0;
 
@@ -138,7 +100,7 @@ void AChunkBase::UpdateMesh()
 			for (int32 z = 0; z < chunkZElements; z++)
 			{
 				int32 index = x + (y * chunkElements) + (z * chunkLineElementsP2);
-				int32 meshIndex = chunkFields[index];
+				int32 meshIndex = (int)chunkFields[index];
 
 				if (meshIndex > 0)
 				{
@@ -160,7 +122,7 @@ void AChunkBase::UpdateMesh()
 						{
 							if (newIndex < chunkFields.Num() && newIndex >= 0)
 							{
-								if ( chunkFields[newIndex] < 1 )
+								if ( (int)chunkFields[newIndex] < 1 )
 								{
 									flag = true;
 								}
@@ -268,22 +230,44 @@ void AChunkBase::UpdateMesh()
 
 }
 
+void AChunkBase::Initmap()
+{
+	// 初始化随机种子
+	FMath::RandInit(RandSeed);
+	offset0 = FVector(FMath::RandRange(0, 1000), FMath::RandRange(0, 1000), FMath::RandRange(0, 1000));
+	offset1 = FVector(FMath::RandRange(0, 1000), FMath::RandRange(0, 1000), FMath::RandRange(0, 1000));
+	offset2 = FVector(FMath::RandRange(0, 1000), FMath::RandRange(0, 1000), FMath::RandRange(0, 1000));
+
+	//初始化Map
+	chunkFields.SetNumUninitialized(chunkTotalElements);
+
+	//遍历map，生成其中每个Block的信息
+	for (int x = 0; x < chunkElements; x++)
+	{
+		for (int y = 0; y < chunkElements; y++)
+		{
+			for (int z = 0; z < chunkZElements; z++)
+			{
+				int32 index = x + (y * chunkElements) + (z * chunkLineElementsP2);
+				auto wPos = FVector(x, y, z) + this->GetActorLocation();
+				chunkFields[index] = (int)GenerateBlockType(wPos);
+			}
+		}
+	}
+
+	//根据生成的信息，Build出Chunk的网格
+	BuildChunk();
+}
+
 void AChunkBase::BuildChunk()
 {
-	TArray<FVector> Vertices;
-	TArray<int32> Triangles;
-	TArray<FVector> Normals;
-	TArray<FVector2D> UVs;
-	TArray<FProcMeshTangent> Tangents;
-	TArray<FColor> VertexColor;
-
 	for (int x = 0;x< chunkElements;x++)
 	{
 		for (int y = 0; y < chunkElements; x++)
 		{
 			for (int z = 0;z < chunkZElements; z++)
 			{
-				BuildBlock(x,y,z, Vertices ,UVs , Triangles);
+				BuildBlock(FVector(x,y,z));
 			}
 		}
 	}
@@ -300,38 +284,37 @@ void AChunkBase::BuildChunk()
 
 }
 
-void AChunkBase::BuildBlock(int x, int y, int z, TArray<FVector> verts, TArray<FVector2D> uvs, TArray<int> tris)
+void AChunkBase::BuildBlock(FVector wPos)
 {
-	if (GetChunkFieldByVector(x, y, z) == 0) return;
+	if ((int)GetChunkFieldByVector(wPos) == 0) return;
 	
-	EBlockType blockType = GetBlockType(x,y,z);
+	EBlockType blockType = GetBlockType(wPos.X,wPos.Y,wPos.Z);
 
 	//Left
-	if (CheckNeedBuildFace(x - 1, y, z))
-		BuildFace(blockType, FVector(x, y, z), FVector::UpVector, FVector::ForwardVector, false, verts, uvs, tris);
+	if (CheckNeedBuildFace(FVector(wPos.X - 1, wPos.Y, wPos.Z)))
+		BuildFace(blockType, EFaceType::Left, FVector(wPos.X, wPos.Y, wPos.Z), FVector::UpVector, FVector::ForwardVector, false);
 	//Right
-	if (CheckNeedBuildFace(x + 1, y, z))
-		BuildFace(blockType, FVector(x + 1, y, z), FVector::UpVector, FVector::ForwardVector, true, verts, uvs, tris);
-
+	if (CheckNeedBuildFace(FVector(wPos.X + 1, wPos.Y, wPos.Z)))
+		BuildFace(blockType, EFaceType::Right, FVector(wPos.X + 1, wPos.Y, wPos.Z), FVector::UpVector, FVector::ForwardVector, true);
 	//Bottom
-	if (CheckNeedBuildFace(x, y - 1, z))
-		BuildFace(blockType, FVector(x, y, z), FVector::ForwardVector, FVector::RightVector, false, verts, uvs, tris);
+	if (CheckNeedBuildFace(FVector(wPos.X, wPos.Y - 1, wPos.Z)))
+		BuildFace(blockType, EFaceType::Down,FVector(wPos.X, wPos.Y, wPos.Z), FVector::ForwardVector, FVector::RightVector, false);
 	//Top
-	if (CheckNeedBuildFace(x, y + 1, z))
-		BuildFace(blockType, FVector(x, y + 1, z), FVector::ForwardVector, FVector::RightVector, true, verts, uvs, tris);
+	if (CheckNeedBuildFace(FVector(wPos.X, wPos.Y + 1, wPos.Z)))
+		BuildFace(blockType, EFaceType::Up, FVector(wPos.X, wPos.Y + 1, wPos.Z), FVector::ForwardVector, FVector::RightVector, true);
 
 	//Back
-	if (CheckNeedBuildFace(x, y, z - 1))
-		BuildFace(blockType, FVector(x, y, z), FVector::UpVector, FVector::RightVector, true, verts, uvs, tris);
+	if (CheckNeedBuildFace(FVector(wPos.X, wPos.Y, wPos.Z - 1)))
+		BuildFace(blockType, EFaceType::BackGround, FVector(wPos.X, wPos.Y, wPos.Z), FVector::UpVector, FVector::RightVector, true);
 	//Front
-	if (CheckNeedBuildFace(x, y, z + 1))
-		BuildFace(blockType, FVector(x, y, z + 1), FVector::UpVector, FVector::RightVector, false, verts, uvs, tris);
+	if (CheckNeedBuildFace(FVector(wPos.X, wPos.Y, wPos.Z + 1)))
+		BuildFace(blockType, EFaceType::Forward, FVector(wPos.X, wPos.Y, wPos.Z + 1), FVector::UpVector, FVector::RightVector, false);
 }
 
-bool AChunkBase::CheckNeedBuildFace(int x, int y, int z)
+bool AChunkBase::CheckNeedBuildFace(FVector wPos)
 {
-	if (y < 0) return false;
-	auto type = GetBlockType(x,y,z);
+	if (wPos.Y < 0) return false;
+	auto type = GetBlockType(wPos.X,wPos.Y,wPos.Z);
 
 	switch (type)
 	{
@@ -342,104 +325,151 @@ bool AChunkBase::CheckNeedBuildFace(int x, int y, int z)
 	}
 }
 
-int32 AChunkBase::GetChunkFieldByVector(int x, int y, int z)
+EBlockType AChunkBase::GetChunkFieldByVector(FVector wPos)
 {
-	return chunkFields[x + y * chunkElements + z * chunkLineElementsP2];
+	return (EBlockType)chunkFields[wPos.X + wPos.Y * chunkElements + wPos.Z * chunkLineElementsP2];
 }
 
 EBlockType AChunkBase::GetBlockType(int x, int y, int z) {
-	return (EBlockType)GetChunkFieldByVector(x,y,z);
+	return (EBlockType)GetChunkFieldByVector(FVector(x,y,z));
 }
 
-EBlockType AChunkBase::GenerateBlockType(int x, int y, int z)
+EBlockType AChunkBase::GenerateBlockType(FVector wPos)
 {
-	////z坐标是否在Chunk内
-	//if (z >= chunkZElements)
-	//{
-	//	return EBlockType::None;
-	//}
+	//z坐标是否在Chunk内
+	if (wPos.Z >= chunkZElements)
+	{
+		return EBlockType::None;
+	}
 
-	////获取当前位置方块随机生成的高度值
-	////float genHeight = GenerateHeight(wPos);
+	//获取当前位置方块随机生成的高度值
+	float genHeight = generateHeight(wPos);
 
-	////当前方块位置高于随机生成的高度值时，当前方块类型为空
-	//if (y > genHeight)
-	//{
-	//	return EBlockType::None;
-	//}
-	////当前方块位置等于随机生成的高度值时，当前方块类型为草地
-	//else if (y == genHeight)
-	//{
-	//	return EBlockType::Grass;
-	//}
-	////当前方块位置小于随机生成的高度值 且 大于 genHeight - 5时，当前方块类型为泥土
-	//else if (y < genHeight && y > genHeight - 5)
-	//{
-	//	return EBlockType::Dirt;
-	//}
-	////其他情况，当前方块类型为碎石
-	//return EBlockType::Gravel;
+	//当前方块位置高于随机生成的高度值时，当前方块类型为空
+	if (wPos.Y > genHeight)
+	{
+		return EBlockType::None;
+	}
+	//当前方块位置等于随机生成的高度值时，当前方块类型为草地
+	else if (wPos.Y == genHeight)
+	{
+		return EBlockType::Grass;
+	}
+	//当前方块位置小于随机生成的高度值 且 大于 genHeight - 5时，当前方块类型为泥土
+	else if (wPos.Y < genHeight && wPos.Y > genHeight - 5)
+	{
+		return EBlockType::Dirt;
+	}
+	//其他情况，当前方块类型为碎石
+	return EBlockType::Gravel;
 	return EBlockType::None;
 }
 
-int AChunkBase::GenerateHeight(int x, int y, int z)
+//SCubeData AChunkBase::ToCubeData(Byte data)
+//{
+//	bool _active = (data & 1 << 0) != 0;
+//	bool _isTransparent = (data & 1 <<1) != 0;
+//
+//	EBlockType _type = (EBlockType)((data & 15<<4) >>4);
+//	return SCubeData(_active,_isTransparent,_type);
+//}
+//
+//Byte AChunkBase::ToByte(SCubeData sdata)
+//{
+//	Byte data = Byte.MinValue;
+//	
+//	data = sdata.active ?(byte)(data | 1<<0):data;
+//	data = sdata.isTransparent ? (byte)(data | 1 << 0) : data;
+//	data |= (byte)((int)sdata.blockType << 4)
+//
+//	return data;
+//}
+
+void AChunkBase::BuildFace(EBlockType blocktype, EFaceType faceType, FVector corner, FVector up, FVector right, bool reversed) 
 {
-	//让随机种子，振幅，频率，应用于我们的噪音采样结果
-	//float x0 = (x + offset0.x) * frequency;
-	//float y0 = (y + offset0.y) * frequency;
-	//float z0 = (z + offset0.z) * frequency;
+	int index = Vertices.Num();
 
-	//float x1 = (x + offset1.x) * frequency * 2;
-	//float y1 = (y + offset1.y) * frequency * 2;
-	//float z1 = (z + offset1.z) * frequency * 2;
-
-	//float x2 = (x + offset2.x) * frequency / 4;
-	//float y2 = (y + offset2.y) * frequency / 4;
-	//float z2 = (z + offset2.z) * frequency / 4;
-
-	//float noise0 = Noise.Generate(x0, y0, z0) * amplitude;
-	//float noise1 = Noise.Generate(x1, y1, z1) * amplitude / 2;
-	//float noise2 = Noise.Generate(x2, y2, z2) * amplitude / 4;
-
-	////在采样结果上，叠加上baseHeight，限制随机生成的高度下限
-	//return FMathf.Floor(noise0 + noise1 + noise2 + baseHeight);
-	return 0;
-}
-
-void AChunkBase::BuildFace(EBlockType blocktype, FVector corner, FVector up, FVector right, 
-		bool reversed, TArray<FVector> verts, TArray<FVector2D> uvs, TArray<int> tris) {
-	int index = verts.Num();
-
-	verts.Add(corner);
-	verts.Add(corner + up);
-	verts.Add(corner + up + right);
-	verts.Add(corner + right);
+	Vertices.Add(corner);
+	Vertices.Add(corner + up);
+	Vertices.Add(corner + up + right);
+	Vertices.Add(corner + right);
 
 	FVector2D uvWidth = FVector2D(0.25f, 0.25f);
 	FVector2D uvCorner = FVector2D(0.00f, 0.75f);
 
 	uvCorner.X += (float)((int)blocktype - 1) / 4;
-	uvs.Add(uvCorner);
-	uvs.Add(FVector2D(uvCorner.X, uvCorner.Y + uvWidth.Y));
-	uvs.Add(FVector2D(uvCorner.X + uvWidth.X, uvCorner.Y + uvWidth.Y));
-	uvs.Add(FVector2D(uvCorner.X + uvWidth.X, uvCorner.Y));
+	UVs.Add(uvCorner);
+	UVs.Add(FVector2D(uvCorner.X, uvCorner.Y + uvWidth.Y));
+	UVs.Add(FVector2D(uvCorner.X + uvWidth.X, uvCorner.Y + uvWidth.Y));
+	UVs.Add(FVector2D(uvCorner.X + uvWidth.X, uvCorner.Y));
 
 	if (reversed)
 	{
-		tris.Add(index + 0);
-		tris.Add(index + 1);
-		tris.Add(index + 2);
-		tris.Add(index + 2);
-		tris.Add(index + 3);
-		tris.Add(index + 0);
+		Triangles.Add(index + 0);
+		Triangles.Add(index + 1);
+		Triangles.Add(index + 2);
+		Triangles.Add(index + 2);
+		Triangles.Add(index + 3);
+		Triangles.Add(index + 0);
 	}
 	else
 	{
-		tris.Add(index + 1);
-		tris.Add(index + 0);
-		tris.Add(index + 2);
-		tris.Add(index + 3);
-		tris.Add(index + 2);
-		tris.Add(index + 0);
+		Triangles.Add(index + 1);
+		Triangles.Add(index + 0);
+		Triangles.Add(index + 2);
+		Triangles.Add(index + 3);
+		Triangles.Add(index + 2);
+		Triangles.Add(index + 0);
 	}
+
+	switch (faceType) {
+		case EFaceType::Up : 
+		{
+			Normals.Append(bNormals0, ARRAY_COUNT(bNormals0));
+			break;
+		}
+		case EFaceType::Down :
+		{
+			Normals.Append(bNormals1, ARRAY_COUNT(bNormals1));
+			break;
+		}
+		case EFaceType::Left:
+		{
+			Normals.Append(bNormals2, ARRAY_COUNT(bNormals2));
+			break;
+		}
+		case EFaceType::Right:
+		{
+			Normals.Append(bNormals3, ARRAY_COUNT(bNormals3));
+			break;
+		}
+		case EFaceType::Forward :
+		{
+			Normals.Append(bNormals4, ARRAY_COUNT(bNormals4));
+			break;
+		}
+		case EFaceType::BackGround :
+		{
+			Normals.Append(bNormals5, ARRAY_COUNT(bNormals5));
+			break;
+		}
+	}
+
+	FColor color = FColor(255, 255, 255, (int)faceType);
+	VertexColor.Add(color);
+	VertexColor.Add(color);
+	VertexColor.Add(color);
+	VertexColor.Add(color);
+}
+
+TArray<int32> AChunkBase::calculateNosie_Implementation()
+{
+	TArray<int32> aa;
+	aa.SetNum(chunkLineElementsP2);
+	return aa;
+}
+
+int AChunkBase::generateHeight_Implementation(FVector wPos)
+{
+	return 0;
 }

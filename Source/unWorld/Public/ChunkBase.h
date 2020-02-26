@@ -36,6 +36,9 @@ public:
 		int32 chunkYindex = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 RandSeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float xMult = 1;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float yMult = 1;
@@ -53,7 +56,6 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	FVector offset2;
 
-
 	UPROPERTY()
 		int32 chunkTotalElements;
 	UPROPERTY()
@@ -67,19 +69,14 @@ public:
 	TArray<int32> chunkFields;
 
 	UPROPERTY()
-		UProceduralMeshComponent* proceduralComponent;
+	UProceduralMeshComponent* proceduralComponent;
 
-	UFUNCTION(BlueprintNativeEvent)
-	TArray<int32> calculateNosie();
-
-	UFUNCTION(BlueprintNativeEvent)
-	int generateHeight();
-
-	virtual TArray<int32> calculateNosie_Implementation();
-
-	virtual int generateHeight_Implementation();
-
-	void Initmap();
+	TArray<FVector> Vertices;
+	TArray<int32> Triangles;
+	TArray<FVector> Normals;
+	TArray<FVector2D> UVs;
+	TArray<FColor> VertexColor;
+	TArray<FProcMeshTangent> Tangents;
 
 protected:
 	// Called when the game starts or when spawned
@@ -97,26 +94,38 @@ public:
 
 	void BuildChunk();
 
+	UFUNCTION(BlueprintNativeEvent)
+	TArray<int32> calculateNosie();
+
+	UFUNCTION(BlueprintNativeEvent)
+	int generateHeight(FVector wPos);
+
+	virtual TArray<int32> calculateNosie_Implementation();
+
+	virtual int generateHeight_Implementation(FVector wPos);
+
+	void Initmap();
+
 private:
 
 	//EBlockType GenerateBlockType(FVector wPos);
 	//int GenerateHeight(FVector wPos);
-	void BuildBlock(int x, int y, int z, TArray<FVector> verts, TArray<FVector2D> uvs, TArray<int> tris);
-	void BuildFace(EBlockType blocktype, FVector corner, FVector up, FVector right,
-		bool reversed, TArray<FVector> verts, TArray<FVector2D> uvs, TArray<int> tris);
+	void BuildBlock(FVector wPos);
+	void BuildFace(EBlockType blocktype, EFaceType faceType, FVector corner, FVector up, FVector right,bool reversed);
 
-	bool CheckNeedBuildFace(int x,int y,int z);
-	int32 GetChunkFieldByVector(int x, int y, int z);
+	bool CheckNeedBuildFace(FVector wPos);
+	EBlockType GetChunkFieldByVector(FVector wPos);
 
 	EBlockType GetBlockType(int x, int y, int z);
+	EBlockType GenerateBlockType(FVector wPos);
 
-	EBlockType GenerateBlockType(int x, int y ,int z);
-
-	int GenerateHeight(int x, int y ,int z);
+	//SCubeData ToCubeData(Byte data);
+	//Byte ToByte(SCubeData sdata);
 };
 
+
 UENUM(BlueprintType)
-enum class EBlockType:uint8
+enum class EBlockType : uint8
 {
 	None,
 	Dirt,
@@ -124,3 +133,38 @@ enum class EBlockType:uint8
 	Gravel,
 };
 
+UENUM(BlueprintType)
+enum class EFaceType : uint8
+{
+	Up,
+	Down,
+	Forward,
+	BackGround,
+	Right,
+	Left
+};
+
+USTRUCT(BlueprintType)
+struct FCubeData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadOnly)
+		bool active;
+	UPROPERTY(BlueprintReadOnly)
+		bool isTransparent;
+	UPROPERTY(BlueprintReadOnly)
+		EBlockType blockType;
+
+	FCubeData(bool _active, bool _isTransparent, EBlockType _blockType) {
+		active = _active;
+		isTransparent = _isTransparent;
+		blockType = _blockType;
+	}
+
+	FCubeData(){
+		active = false;
+		isTransparent = false;
+		blockType = EBlockType::None;
+	}
+};

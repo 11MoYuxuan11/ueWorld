@@ -24,6 +24,25 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	bool UseRandomSeed;
 
+	UPROPERTY(BlueprintReadOnly)
+	int32 ChunkSize;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 ChunkSizeHalf;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
+	int32 ChunkLineElement = 30;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
+	int32 VoxelSize = 100;
+
+	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Setting")
+	int32 renderRange = 6;
+
+	int32 ChunkX;
+
+	int32 ChunkY;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -43,4 +62,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void CreateWorld();
+
+	UFUNCTION(BlueprintCallable)
+	void AddChunk();
 };

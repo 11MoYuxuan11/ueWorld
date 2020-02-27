@@ -20,106 +20,8 @@ ASelectedCubeBase::ASelectedCubeBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	//proceduralComponent = NewObject<UProceduralMeshComponent>(this, "proceduralComponent");
-	//proceduralComponent->RegisterComponent();
-
-	//TArray<FVector> Vertices;
-	//TArray<int32> Triangles;
-	//TArray<FVector> Normals;
-	//TArray<FVector2D> UVs;
-	//TArray<FProcMeshTangent> Tangents;
-	//TArray<FColor> VertexColor;
-
-	//int32 voxelSizeHalf = 50;
-	//int32 voxelSize = voxelSizeHalf * 2;
-
-	//int32 x = 1;
-	//int32 y = 1;
-	//int32 z = 1;
-
-	//for (int i = 0; i < 6; i++)
-	//{
-	//		Triangles.Add(bTriangles[0]);
-	//		Triangles.Add(bTriangles[1]);
-	//		Triangles.Add(bTriangles[2]);
-	//		Triangles.Add(bTriangles[3]);
-	//		Triangles.Add(bTriangles[4]);
-	//		Triangles.Add(bTriangles[5]);
-
-	//		//triangle_num += 4;
-
-	//		switch (i)
-	//		{
-	//		case 0: {
-	//			Vertices.Add(FVector(-voxelSizeHalf + (x * voxelSize), voxelSizeHalf + (y * voxelSize), voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(-voxelSizeHalf + (x * voxelSize), -voxelSizeHalf + (y * voxelSize), voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(voxelSizeHalf + (x * voxelSize), -voxelSizeHalf + (y * voxelSize), voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(voxelSizeHalf + (x * voxelSize), voxelSizeHalf + (y * voxelSize), voxelSizeHalf + (z * voxelSize)));
-
-	//			Normals.Append(bNormals0, ARRAY_COUNT(bNormals0));
-	//			break;
-	//		}
-	//		case 1: {
-	//			Vertices.Add(FVector(voxelSizeHalf + (x * voxelSize), -voxelSizeHalf + (y * voxelSize), -voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(-voxelSizeHalf + (x * voxelSize), -voxelSizeHalf + (y * voxelSize), -voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(-voxelSizeHalf + (x * voxelSize), voxelSizeHalf + (y * voxelSize), -voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(voxelSizeHalf + (x * voxelSize), voxelSizeHalf + (y * voxelSize), -voxelSizeHalf + (z * voxelSize)));
-
-	//			Normals.Append(bNormals1, ARRAY_COUNT(bNormals1));
-	//			break;
-	//		}
-	//		case 2: {
-	//			Vertices.Add(FVector(voxelSizeHalf + (x * voxelSize), voxelSizeHalf + (y * voxelSize), voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(voxelSizeHalf + (x * voxelSize), voxelSizeHalf + (y * voxelSize), -voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(-voxelSizeHalf + (x * voxelSize), voxelSizeHalf + (y * voxelSize), -voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(-voxelSizeHalf + (x * voxelSize), voxelSizeHalf + (y * voxelSize), voxelSizeHalf + (z * voxelSize)));
-
-	//			Normals.Append(bNormals2, ARRAY_COUNT(bNormals2));
-	//			break;
-	//		}
-	//		case 3: {
-	//			Vertices.Add(FVector(-voxelSizeHalf + (x * voxelSize), -voxelSizeHalf + (y * voxelSize), voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(-voxelSizeHalf + (x * voxelSize), -voxelSizeHalf + (y * voxelSize), -voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(voxelSizeHalf + (x * voxelSize), -voxelSizeHalf + (y * voxelSize), -voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(voxelSizeHalf + (x * voxelSize), -voxelSizeHalf + (y * voxelSize), voxelSizeHalf + (z * voxelSize)));
-
-	//			Normals.Append(bNormals3, ARRAY_COUNT(bNormals3));
-	//			break;
-	//		}
-	//		case 4: {
-	//			Vertices.Add(FVector(voxelSizeHalf + (x * voxelSize), -voxelSizeHalf + (y * voxelSize), voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(voxelSizeHalf + (x * voxelSize), -voxelSizeHalf + (y * voxelSize), -voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(voxelSizeHalf + (x * voxelSize), voxelSizeHalf + (y * voxelSize), -voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(voxelSizeHalf + (x * voxelSize), voxelSizeHalf + (y * voxelSize), voxelSizeHalf + (z * voxelSize)));
-
-	//			Normals.Append(bNormals4, ARRAY_COUNT(bNormals4));
-	//			break;
-	//		}
-	//		case 5: {
-	//			Vertices.Add(FVector(-voxelSizeHalf + (x * voxelSize), voxelSizeHalf + (y * voxelSize), voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(-voxelSizeHalf + (x * voxelSize), voxelSizeHalf + (y * voxelSize), -voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(-voxelSizeHalf + (x * voxelSize), -voxelSizeHalf + (y * voxelSize), -voxelSizeHalf + (z * voxelSize)));
-	//			Vertices.Add(FVector(-voxelSizeHalf + (x * voxelSize), -voxelSizeHalf + (y * voxelSize), voxelSizeHalf + (z * voxelSize)));
-
-	//			Normals.Append(bNormals5, ARRAY_COUNT(bNormals5));
-	//			break;
-	//		}
-	//		}
-
-	//		UVs.Append(bUVs, ARRAY_COUNT(bUVs));
-
-
-	//		FColor color = FColor(255, 255, 255, i);
-	//		VertexColor.Add(color);
-	//		VertexColor.Add(color);
-	//		VertexColor.Add(color);
-	//		VertexColor.Add(color);
-	//}
-
-	//proceduralComponent->ClearAllMeshSections();
-	//proceduralComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, VertexColor, Tangents, true);
-	//proceduralComponent->SetMaterial(0,Material);
+	
+	//BuildBlock();
 }
 
 // Called when the game starts or when spawned
@@ -134,5 +36,142 @@ void ASelectedCubeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ASelectedCubeBase::OnConstruction(const FTransform& Transform)
+{
+	//mesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("proceduralComponent"));
+	mesh = NewObject<UProceduralMeshComponent>(this, "mesh");
+	mesh->RegisterComponent();
+
+	RootComponent = mesh;
+	RootComponent->SetWorldTransform(Transform);
+
+	Super::OnConstruction(Transform);
+
+	BuildBlock();
+}
+
+void ASelectedCubeBase::BuildBlock()
+{
+	EBlockType blockType = EBlockType::Grass;
+
+	BuildFace(blockType, EFaceType::Left, FVector::ZeroVector,false);
+	BuildFace(blockType, EFaceType::Right, FVector::ZeroVector,true);
+	BuildFace(blockType, EFaceType::Down, FVector::ZeroVector, false);
+	BuildFace(blockType, EFaceType::Up, FVector::ZeroVector,true);
+	BuildFace(blockType, EFaceType::BackGround, FVector::ZeroVector,true);
+	BuildFace(blockType, EFaceType::Forward, FVector::ZeroVector,false);
+
+	mesh->ClearAllMeshSections();
+	mesh->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, VertexColor, Tangents, true);
+
+	mesh->SetMaterial(0, Material);
+}
+
+void ASelectedCubeBase::BuildFace(EBlockType blocktype, EFaceType faceType, FVector wPos,bool reversed)
+{
+	int index = Vertices.Num();
+
+	//FVector2D uvWidth = FVector2D(0.25f, 0.25f);
+	//FVector2D uvCorner = FVector2D(0.00f, 0.75f);
+
+	//uvCorner.X += (float)((int)blocktype - 1) / 4;
+
+	//UVs.Add(uvCorner);
+	//UVs.Add(FVector2D(uvCorner.X, uvCorner.Y + uvWidth.Y));
+	//UVs.Add(FVector2D(uvCorner.X + uvWidth.X, uvCorner.Y + uvWidth.Y));
+	//UVs.Add(FVector2D(uvCorner.X + uvWidth.X, uvCorner.Y));
+
+	Triangles.Add(index + bTriangles[0]);
+	Triangles.Add(index + bTriangles[1]);
+	Triangles.Add(index + bTriangles[2]);
+	Triangles.Add(index + bTriangles[3]);
+	Triangles.Add(index + bTriangles[4]);
+	Triangles.Add(index + bTriangles[5]);
+
+	//if (reversed)
+	//{
+	//	Triangles.Add(index + 0);
+	//	Triangles.Add(index + 1);
+	//	Triangles.Add(index + 2);
+	//	Triangles.Add(index + 2);
+	//	Triangles.Add(index + 3);
+	//	Triangles.Add(index + 0);
+	//}
+	//else
+	//{
+	//	Triangles.Add(index + 1);
+	//	Triangles.Add(index + 0);
+	//	Triangles.Add(index + 2);
+	//	Triangles.Add(index + 3);
+	//	Triangles.Add(index + 2);
+	//	Triangles.Add(index + 0);
+	//}
+
+	switch (faceType) {
+		case EFaceType::Up:
+		{
+			Vertices.Add(wPos + FVector::UpVector * 50 + FVector::LeftVector * 50 + FVector::ForwardVector * 50);
+			Vertices.Add(wPos + FVector::UpVector * 50 + FVector::LeftVector * 50 + FVector::BackwardVector * 50);
+			Vertices.Add(wPos + FVector::UpVector * 50 + FVector::RightVector * 50 + FVector::BackwardVector * 50);
+			Vertices.Add(wPos + FVector::UpVector * 50 + FVector::RightVector * 50 + FVector::ForwardVector * 50);
+			Normals.Append(bNormals0, ARRAY_COUNT(bNormals0));
+			break;
+		}
+		case EFaceType::Down:
+		{
+			Vertices.Add(wPos + FVector::DownVector * 50 + FVector::LeftVector * 50 + FVector::ForwardVector * 50);
+			Vertices.Add(wPos + FVector::DownVector * 50 + FVector::LeftVector * 50 + FVector::BackwardVector * 50);
+			Vertices.Add(wPos + FVector::DownVector * 50 + FVector::RightVector * 50 + FVector::BackwardVector * 50);
+			Vertices.Add(wPos + FVector::DownVector * 50 + FVector::RightVector * 50 + FVector::ForwardVector * 50);
+			Normals.Append(bNormals1, ARRAY_COUNT(bNormals1));
+			break;
+		}
+		case EFaceType::Left:
+		{
+			Vertices.Add(wPos + FVector::LeftVector * 50 + FVector::UpVector * 50 + FVector::ForwardVector * 50);
+			Vertices.Add(wPos + FVector::LeftVector * 50 + FVector::UpVector * 50 + FVector::BackwardVector * 50);
+			Vertices.Add(wPos + FVector::LeftVector * 50 + FVector::DownVector * 50 + FVector::BackwardVector * 50);
+			Vertices.Add(wPos + FVector::LeftVector * 50 + FVector::DownVector * 50 + FVector::ForwardVector * 50);
+			Normals.Append(bNormals2, ARRAY_COUNT(bNormals2));
+			break;
+		}
+		case EFaceType::Right:
+		{
+			Vertices.Add(wPos + FVector::RightVector * 50 + FVector::UpVector * 50 + FVector::ForwardVector * 50);
+			Vertices.Add(wPos + FVector::RightVector * 50 + FVector::UpVector * 50 + FVector::BackwardVector * 50);
+			Vertices.Add(wPos + FVector::RightVector * 50 + FVector::DownVector * 50 + FVector::BackwardVector * 50);
+			Vertices.Add(wPos + FVector::RightVector * 50 + FVector::DownVector * 50 + FVector::ForwardVector * 50);
+			Normals.Append(bNormals3, ARRAY_COUNT(bNormals3));
+			break;
+		}
+		case EFaceType::Forward:
+		{
+			Vertices.Add(wPos + FVector::ForwardVector * 50 + FVector::LeftVector * 50 + FVector::UpVector * 50);
+			Vertices.Add(wPos + FVector::ForwardVector * 50 + FVector::LeftVector * 50 + FVector::DownVector * 50);
+			Vertices.Add(wPos + FVector::ForwardVector * 50 + FVector::RightVector * 50 + FVector::DownVector * 50);
+			Vertices.Add(wPos + FVector::ForwardVector * 50 + FVector::RightVector * 50 + FVector::UpVector * 50);
+			Normals.Append(bNormals4, ARRAY_COUNT(bNormals4));
+			break;
+		}
+		case EFaceType::BackGround:
+		{
+			Vertices.Add(wPos + FVector::BackwardVector * 50 + FVector::LeftVector * 50 + FVector::UpVector * 50);
+			Vertices.Add(wPos + FVector::BackwardVector * 50 + FVector::LeftVector * 50 + FVector::DownVector * 50);
+			Vertices.Add(wPos + FVector::BackwardVector * 50 + FVector::RightVector * 50 + FVector::DownVector * 50);
+			Vertices.Add(wPos + FVector::BackwardVector * 50 + FVector::RightVector * 50 + FVector::UpVector * 50);
+			Normals.Append(bNormals5, ARRAY_COUNT(bNormals5));
+			break;
+		}
+	}
+
+	UVs.Append(bUVs,ARRAY_COUNT(bUVs));
+
+	FColor color = FColor(255, 255, 255, (int)faceType);
+	VertexColor.Add(color);
+	VertexColor.Add(color);
+	VertexColor.Add(color);
+	VertexColor.Add(color);
 }
 

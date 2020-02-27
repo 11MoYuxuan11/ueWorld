@@ -8,6 +8,11 @@ AWorldManagerBase::AWorldManagerBase()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	ChunkSize = ChunkLineElement * VoxelSize;
+	ChunkSizeHalf = ChunkSize / 2;
+
+
 }
 
 // Called when the game starts or when spawned
@@ -36,7 +41,7 @@ void AWorldManagerBase::RandomFillMap()
 		for (int j = 0; j < WorldElements; j++)
 		{
 			if (i == 0 || i == WorldElements - 1 || j == 0 || j == WorldElements - 1)
-				FaultMap[i * WorldElements + j] = true;
+				FaultMap[i * WorldElements + j] = false;
 			else
 			{
 				FaultMap[i * WorldElements + j] = FMath::RandBool();
@@ -71,9 +76,9 @@ void AWorldManagerBase::SmoothMap()
 		{
 			int surroundingTiles = GetSurroundingWalls(i, j);
 			if (surroundingTiles > 4)
-				FaultMap[i * WorldElements + j] = true;
-			else if (surroundingTiles < 4)
 				FaultMap[i * WorldElements + j] = false;
+			else if (surroundingTiles < 4)
+				FaultMap[i * WorldElements + j] = true;
 		}
 	}
 }
@@ -111,3 +116,16 @@ void AWorldManagerBase::CreateWorld()
 	//确定玩家出生点 根据玩家的种族选择一个村镇出生
 }
 
+void AWorldManagerBase::AddChunk()
+{
+	for (int i=0;i<renderRange;i++)
+	{
+		for (int j = 0;j<renderRange; j++)
+		{
+			//if ()
+			//{
+			//	
+			//}
+		}
+	}
+}

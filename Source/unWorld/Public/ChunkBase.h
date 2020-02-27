@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ProceduralMeshComponent.h"
-#include "GridBase.h"
 #include "ChunkBase.generated.h"
 
 UCLASS()
@@ -88,10 +87,6 @@ public:
 
 	virtual void OnConstruction(const FTransform& Transform) override;
 
-	void GenerateChunk();
-
-	void UpdateMesh();
-
 	void BuildChunk();
 
 	UFUNCTION(BlueprintNativeEvent)
@@ -104,6 +99,7 @@ public:
 
 	virtual int generateHeight_Implementation(FVector wPos);
 
+	UFUNCTION(BlueprintCallable)
 	void Initmap();
 
 private:
@@ -111,10 +107,10 @@ private:
 	//EBlockType GenerateBlockType(FVector wPos);
 	//int GenerateHeight(FVector wPos);
 	void BuildBlock(FVector wPos);
-	void BuildFace(EBlockType blocktype, EFaceType faceType, FVector corner, FVector up, FVector right,bool reversed);
+	void BuildFace(EBlockType blocktype, EFaceType faceType, FVector wPos);
 
 	bool CheckNeedBuildFace(FVector wPos);
-	EBlockType GetChunkFieldByVector(FVector wPos);
+	int32 GetChunkFieldByVector(FVector wPos);
 
 	EBlockType GetBlockType(int x, int y, int z);
 	EBlockType GenerateBlockType(FVector wPos);
@@ -127,10 +123,10 @@ private:
 UENUM(BlueprintType)
 enum class EBlockType : uint8
 {
-	None,
-	Dirt,
-	Grass,
-	Gravel,
+	None = 0,
+	Dirt = 1,
+	Grass = 3,
+	Gravel = 4,
 };
 
 UENUM(BlueprintType)

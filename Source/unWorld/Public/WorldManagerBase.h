@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "ChunkBase.h"
 #include "WorldManagerBase.generated.h"
 
 UCLASS()
@@ -15,11 +16,10 @@ public:
 	// Sets default values for this actor's properties
 	AWorldManagerBase();
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	int32 WorldElements = 1024;
-
 	UPROPERTY(BlueprintReadOnly)
 	TArray<bool> FaultMap;
+	UPROPERTY(BlueprintReadOnly)
+	TArray<int32> ElevationMap;
 
 	UPROPERTY(BlueprintReadOnly)
 	bool UseRandomSeed;
@@ -31,7 +31,7 @@ public:
 	int32 ChunkSizeHalf;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
-	int32 ChunkLineElement = 30;
+	int32 ChunkLineElement = 16;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
 	int32 VoxelSize = 100;
@@ -39,9 +39,17 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Setting")
 	int32 renderRange = 6;
 
-	int32 ChunkX;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
+	int32 WorldElements;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
+	int32 WorldChunkElements = 1024;
+
+	int32 ChunkX;
 	int32 ChunkY;
+	int32 WorldSize;
+
+	TSubclassOf<class AChunkBase> ChunkClass; 
 
 protected:
 	// Called when the game starts or when spawned
@@ -68,12 +76,26 @@ public:
 
 	void GenerateElevation();
 
-	UFUNCTION(BlueprintNativeEvent)
-	int32 GenerateHeight(FVector wPos);
+	UFUNCTION(BlueprintCallable)
+	bool UpdatePostion();
 
-	int32 GenerateHeight_Implementation(FVector wPos);
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GenerateHeight(FVector wPos, float frequency, float amplitude);
+
+	int32 GenerateHeight_Implementation(FVector wPos, float frequency, float amplitude);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveChunk();
 
 private:
 	
-	
+	FVector characterPosition;
+
+	TArray<FVector2D> chunkCords;
+
+	//每个Chunk都包含16*16*256个block
+	TArray<AChunkBase*> chunks;
+
+private:
+	bool CheckRadius(float x,float y);
 };

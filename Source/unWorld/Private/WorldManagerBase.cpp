@@ -2,6 +2,7 @@
 
 
 #include "WorldManagerBase.h"
+#include "Runtime/Engine//Classes/Kismet/GameplayStatics.h"
 
 // Sets default values
 AWorldManagerBase::AWorldManagerBase()
@@ -11,8 +12,15 @@ AWorldManagerBase::AWorldManagerBase()
 
 	ChunkSize = ChunkLineElement * VoxelSize;
 	ChunkSizeHalf = ChunkSize / 2;
+	WorldElements = WorldChunkElements * ChunkLineElement;
+	WorldSize = VoxelSize * WorldElements;
 
+	// 列表初始化
+	ElevationMap.SetNumUninitialized(WorldElements* WorldElements);
+	FaultMap.SetNumUninitialized(WorldElements * WorldElements);
 
+	//chunkCords.SetNumUninitialized(WorldChunkElements*WorldChunkElements);
+	//chunks.SetNumUninitialized(WorldChunkElements * WorldChunkElements);
 }
 
 // Called when the game starts or when spawned
@@ -27,6 +35,9 @@ void AWorldManagerBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UpdatePostion();
+	RemoveChunk();
+	AddChunk();
 }
 
 void AWorldManagerBase::RandomFillMap()
@@ -94,8 +105,7 @@ void AWorldManagerBase::CreateWorld()
 
 	//创建高度图（大陆、高山和山丘不同起伏和噪声）Elevation
 
-	
-
+	GenerateElevation();
 
 	//腐蚀（降水量）Rainfall
 
@@ -125,15 +135,89 @@ void AWorldManagerBase::AddChunk()
 	{
 		for (int j = 0;j<renderRange; j++)
 		{
-			//if ()
-			//{
-			//	
-			//}
+			if (CheckRadius( (ChunkX + i)*ChunkSize +ChunkSizeHalf, 
+				(ChunkY + j) * ChunkSize + ChunkSizeHalf))
+			{
+				if (!chunkCords.Contains(FVector2D(ChunkX + i, ChunkY + j)))
+				{
+					auto spawnTransform = FTransform();
+					chunkCords.Add(FVector2D(ChunkX + i, ChunkY + j));
+					auto deferredChunk = Cast<AChunkBase>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this,ChunkClass,spawnTransform));
+
+					// 初始化传参
+					if (deferredChunk != nullptr)
+					{
+						deferredChunk->rabdinSeed = 0;
+						deferredChunk->voxelSize = VoxelSize;
+						deferredChunk->chunkElements = ChunkLineElement;
+						deferredChunk->chunkXindex = i;
+						deferredChunk->chunkYindex = j;
+
+						UGameplayStatics::FinishSpawningActor(deferredChunk, spawnTransform);
+					}
+
+					// 添加到列表中
+					chunks.Add(deferredChunk);
+
+					//TODO 将数据传递给Chunk；
+				}
+			}
 		}
 	}
 }
 
-int32 AWorldManagerBase::GenerateHeight_Implementation(FVector wPos)
+bool AWorldManagerBase::CheckRadius(float x, float y)
+{
+	return (FVector(x,y,0) - characterPosition).Size() < ChunkSize * renderRange;
+}
+
+void AWorldManagerBase::GenerateElevation()
+{
+	ElevationMap.SetNumUninitialized(WorldElements * WorldElements);
+	for (int32 i = 0; i < WorldElements; i++)
+	{
+		for (int32 j = 0; j < WorldElements; j++)
+		{
+			// 暂时进行一次取高度运算
+			ElevationMap[i + j * WorldElements] = GenerateHeight(FVector(i,j,0), 0.025f, 1);
+		}
+	}
+}
+
+bool AWorldManagerBase::UpdatePostion()
+{
+	auto chaPosition = UGameplayStatics::GetPlayerPawn(GetWorld(),0)->GetActorLocation();
+
+	characterPosition = chaPosition * FVector(1,1,0);
+	if ((ChunkX != characterPosition.X/ChunkSizeHalf)||(ChunkY != characterPosition.Y / ChunkSizeHalf))
+	{
+		ChunkX = characterPosition.X / ChunkSizeHalf;
+		ChunkY = characterPosition.Y / ChunkSizeHalf;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+int32 AWorldManagerBase::GenerateHeight_Implementation(FVector wPos, float frequency, float amplitude)
 {
 	return 0;
+}
+
+void AWorldManagerBase::RemoveChunk()
+{
+	for (int i = 0;i < chunkCords.Num();i++ )
+	{
+		if (!CheckRadius(ChunkSize * chunkCords[i].X + ChunkSizeHalf, ChunkSize * chunkCords[i].Y + ChunkSizeHalf))
+		{
+			// 删除Chunk和相关引用
+			chunks[i]->Destroy(false);
+			chunkCords.RemoveAt(i);
+			chunks.RemoveAt(i);
+		}
+
+		//TODO 在干掉Chunk之前，将数据储存起来
+	}
 }

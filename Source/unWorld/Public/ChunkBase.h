@@ -1,5 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+/*
+简短的设计文档，备忘：
+Chunk类负责生成程序化网格，并且处理面优化等操作
+Chunk在每次创建时会获取数据，根据数据正确的生成网格即可
+地形随机操作交给WorldManager完成
+这里我将网格生成过程，拆解为多个步骤
+BuildChunk -> BuildBlock -> BuildFace
+便于理解和阅读
+*/
 #pragma once
 
 #include "CoreMinimal.h"

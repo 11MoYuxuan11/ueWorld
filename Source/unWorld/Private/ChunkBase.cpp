@@ -53,7 +53,8 @@ void AChunkBase::OnConstruction(const FTransform& Transform)
 
 	Super::OnConstruction(Transform);
 
-	//Initmap();
+	Initmap();
+	UpdateMesh();
 }
 
 void AChunkBase::Initmap()
@@ -105,18 +106,6 @@ void AChunkBase::BuildChunk()
 			}
 		}
 	}
-
-	proceduralComponent->ClearAllMeshSections();
-	proceduralComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, VertexColor, Tangents, true);
-
-	int s = 0;
-	while (s < Materials.Num())
-	{
-		proceduralComponent->SetMaterial(s, Materials[s]);
-		s++;
-	}
-
-
 }
 
 void AChunkBase::BuildBlock(FVector wPos)
@@ -125,25 +114,27 @@ void AChunkBase::BuildBlock(FVector wPos)
 	
 	EBlockType blockType = GetBlockType(wPos.X,wPos.Y,wPos.Z);
 
-	//Left
-	if (CheckNeedBuildFace(FVector(wPos.X - 1, wPos.Y, wPos.Z)))
-		BuildFace(blockType, EFaceType::Left, wPos);
-	//Right
-	if (CheckNeedBuildFace(FVector(wPos.X + 1, wPos.Y, wPos.Z)))
-		BuildFace(blockType, EFaceType::Right, wPos);
-	//Bottom
-	if (CheckNeedBuildFace(FVector(wPos.X, wPos.Y - 1, wPos.Z)))
-		BuildFace(blockType, EFaceType::Down, wPos);
-	//Top
-	if (CheckNeedBuildFace(FVector(wPos.X, wPos.Y + 1, wPos.Z)))
-		BuildFace(blockType, EFaceType::Up, wPos);
+	BuildFace(blockType, EFaceType::Left, FVector(0, 0, 0), FVector::UpVector, FVector::ForwardVector, true);
+	BuildFace(blockType, EFaceType::Right, FVector(0, 100, 0), FVector::UpVector, FVector::ForwardVector, false);
+	BuildFace(blockType, EFaceType::Down, FVector(0, 0, 0), FVector::ForwardVector, FVector::RightVector, true);
+	BuildFace(blockType, EFaceType::Up, FVector(0, 0, 100), FVector::ForwardVector, FVector::RightVector, false);
+	BuildFace(blockType, EFaceType::BackGround, FVector(0, 0, 0), FVector::UpVector, FVector::RightVector, false);
+	BuildFace(blockType, EFaceType::Forward, FVector(100, 0, 0), FVector::UpVector, FVector::RightVector, true);
 
-	//Back
-	if (CheckNeedBuildFace(FVector(wPos.X, wPos.Y, wPos.Z - 1)))
-		BuildFace(blockType, EFaceType::BackGround, wPos);
-	//Front
-	if (CheckNeedBuildFace(FVector(wPos.X, wPos.Y, wPos.Z + 1)))
-		BuildFace(blockType, EFaceType::Forward, wPos);
+}
+
+void AChunkBase::UpdateMesh()
+{
+	proceduralComponent->ClearAllMeshSections();
+	proceduralComponent->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, VertexColor, Tangents, true);
+
+
+	int s = 0;
+	while (s < Materials.Num())
+	{
+		proceduralComponent->SetMaterial(s, Materials[s]);
+		s++;
+	}
 }
 
 bool AChunkBase::CheckNeedBuildFace(FVector wPos)
@@ -210,38 +201,50 @@ EBlockType AChunkBase::GenerateBlockType(FVector wPos)
 	return EBlockType::Gravel;
 }
 
-void AChunkBase::BuildFace(EBlockType blocktype, EFaceType faceType, FVector wPos) 
+void AChunkBase::BuildFace(EBlockType blocktype, EFaceType faceType, FVector wPos, FVector up, FVector right,bool reversed)
 {
 	int index = Vertices.Num();
 
-	FVector2D uvWidth = FVector2D(0.25f, 0.25f);
-	FVector2D uvCorner = FVector2D(0.00f, 0.75f);
+	Vertices.Add(wPos * voxelSize + up * voxelSize + right * voxelSize);
+	Vertices.Add(wPos * voxelSize + right * voxelSize);
+	Vertices.Add(wPos * voxelSize);
+	Vertices.Add(wPos * voxelSize + up * voxelSize);
 
-	uvCorner.X += (float)((int)blocktype - 1) / 4;
-	UVs.Add(uvCorner);
-	UVs.Add(FVector2D(uvCorner.X, uvCorner.Y + uvWidth.Y));
-	UVs.Add(FVector2D(uvCorner.X + uvWidth.X, uvCorner.Y + uvWidth.Y));
-	UVs.Add(FVector2D(uvCorner.X + uvWidth.X, uvCorner.Y));
+	//FVector2D uvWidth = FVector2D(0.25f, 0.25f);
+	//FVector2D uvCorner = FVector2D(0.00f, 0.75f);
 
-	Triangles.Add(index + bTriangles[0]);
-	Triangles.Add(index + bTriangles[1]);
-	Triangles.Add(index + bTriangles[2]);
-	Triangles.Add(index + bTriangles[3]);
-	Triangles.Add(index + bTriangles[4]);
-	Triangles.Add(index + bTriangles[5]);
+	//uvCorner.X += (float)((int)blocktype - 1) / 4;
+	//UVs.Add(uvCorner);
+	//UVs.Add(FVector2D(uvCorner.X, uvCorner.Y + uvWidth.Y));
+	//UVs.Add(FVector2D(uvCorner.X + uvWidth.X, uvCorner.Y + uvWidth.Y));
+	//UVs.Add(FVector2D(uvCorner.X + uvWidth.X, uvCorner.Y));
+
+	if (reversed)
+	{
+		Triangles.Add(index + 0);
+		Triangles.Add(index + 1);
+		Triangles.Add(index + 2);
+		Triangles.Add(index + 2);
+		Triangles.Add(index + 3);
+		Triangles.Add(index + 0);
+	}
+	else
+	{
+		Triangles.Add(index + 1);
+		Triangles.Add(index + 0);
+		Triangles.Add(index + 2);
+		Triangles.Add(index + 3);
+		Triangles.Add(index + 2);
+		Triangles.Add(index + 0);
+	}
 
 	switch (faceType) {
-		case EFaceType::Up : 
+		case EFaceType::Up:
 		{
-			//Vertices.Add(wPos+FVector::UpVector*voxelSizeHalf);
-			//Vertices.Add(FVector(-voxelSizeHalf + (x * voxelSize), -voxelSizeHalf + (y * voxelSize), voxelSizeHalf + (z * voxelSize)));
-			//Vertices.Add(FVector(voxelSizeHalf + (x * voxelSize), -voxelSizeHalf + (y * voxelSize), voxelSizeHalf + (z * voxelSize)));
-			//Vertices.Add(FVector(voxelSizeHalf + (x * voxelSize), voxelSizeHalf + (y * voxelSize), voxelSizeHalf + (z * voxelSize)));
-
 			Normals.Append(bNormals0, ARRAY_COUNT(bNormals0));
 			break;
 		}
-		case EFaceType::Down :
+		case EFaceType::Down:
 		{
 			Normals.Append(bNormals1, ARRAY_COUNT(bNormals1));
 			break;
@@ -256,19 +259,20 @@ void AChunkBase::BuildFace(EBlockType blocktype, EFaceType faceType, FVector wPo
 			Normals.Append(bNormals3, ARRAY_COUNT(bNormals3));
 			break;
 		}
-		case EFaceType::Forward :
+		case EFaceType::Forward:
 		{
 			Normals.Append(bNormals4, ARRAY_COUNT(bNormals4));
 			break;
 		}
-		case EFaceType::BackGround :
+		case EFaceType::BackGround:
 		{
 			Normals.Append(bNormals5, ARRAY_COUNT(bNormals5));
 			break;
 		}
 	}
+	UVs.Append(bUVs, ARRAY_COUNT(bUVs));
 
-	FColor color = FColor(255, 255, 255, (int)faceType);
+	FColor color = FColor(255, 255, 255, (int32)faceType);
 	VertexColor.Add(color);
 	VertexColor.Add(color);
 	VertexColor.Add(color);

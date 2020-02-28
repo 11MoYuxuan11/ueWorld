@@ -16,7 +16,7 @@ public:
 	AWorldManagerBase();
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	int32 WorldElements = 1024*1024;
+	int32 WorldElements = 1024;
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<bool> FaultMap;
@@ -65,4 +65,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void AddChunk();
+
+	void GenerateElevation();
+
+	UFUNCTION(BlueprintNativeEvent)
+	int32 GenerateHeight(FVector wPos);
+
+	int32 GenerateHeight_Implementation(FVector wPos);
+
+private:
+	
+	
 };

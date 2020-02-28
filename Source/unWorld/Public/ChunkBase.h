@@ -7,6 +7,15 @@
 #include "ProceduralMeshComponent.h"
 #include "ChunkBase.generated.h"
 
+UENUM(BlueprintType)
+enum class EBlockType : uint8
+{
+	None = 0,
+	Dirt = 1,
+	Grass = 3,
+	Gravel = 4,
+};
+
 UCLASS()
 class UNWORLD_API AChunkBase : public AActor
 {
@@ -23,7 +32,7 @@ public:
 		int32 rabdinSeed = 0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
-		int32 voxelSize = 200;
+		int32 voxelSize = 100;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Meta = (ExposeOnSpawn = true))
 		int32 chunkElements = 10;
@@ -102,31 +111,29 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Initmap();
 
+	UFUNCTION(BlueprintCallable)
+	EBlockType GetBlockType(int x, int y, int z);
+
+	UFUNCTION(BlueprintCallable)
+	void BuildBlock(FVector wPos);
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateMesh();
+
 private:
 
 	//EBlockType GenerateBlockType(FVector wPos);
 	//int GenerateHeight(FVector wPos);
-	void BuildBlock(FVector wPos);
-	void BuildFace(EBlockType blocktype, EFaceType faceType, FVector wPos);
+
+	void BuildFace(EBlockType blocktype, EFaceType faceType, FVector wPos, FVector up, FVector right,bool reversed);
 
 	bool CheckNeedBuildFace(FVector wPos);
 	int32 GetChunkFieldByVector(FVector wPos);
 
-	EBlockType GetBlockType(int x, int y, int z);
 	EBlockType GenerateBlockType(FVector wPos);
 
 	//SCubeData ToCubeData(Byte data);
 	//Byte ToByte(SCubeData sdata);
-};
-
-
-UENUM(BlueprintType)
-enum class EBlockType : uint8
-{
-	None = 0,
-	Dirt = 1,
-	Grass = 3,
-	Gravel = 4,
 };
 
 UENUM(BlueprintType)
@@ -134,10 +141,10 @@ enum class EFaceType : uint8
 {
 	Up,
 	Down,
-	Forward,
-	BackGround,
 	Right,
-	Left
+	Left,
+	Forward,
+	BackGround
 };
 
 USTRUCT(BlueprintType)

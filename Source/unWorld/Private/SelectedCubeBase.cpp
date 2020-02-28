@@ -56,12 +56,12 @@ void ASelectedCubeBase::BuildBlock()
 {
 	EBlockType blockType = EBlockType::Grass;
 
-	BuildFace(blockType, EFaceType::Left, FVector::ZeroVector,false);
-	BuildFace(blockType, EFaceType::Right, FVector::ZeroVector,true);
-	BuildFace(blockType, EFaceType::Down, FVector::ZeroVector, false);
-	BuildFace(blockType, EFaceType::Up, FVector::ZeroVector,true);
-	BuildFace(blockType, EFaceType::BackGround, FVector::ZeroVector,true);
-	BuildFace(blockType, EFaceType::Forward, FVector::ZeroVector,false);
+	BuildFace(blockType, EFaceType::Left, FVector(0, 0, 0), FVector::UpVector, FVector::ForwardVector, true);
+	BuildFace(blockType, EFaceType::Right, FVector(0, 100, 0), FVector::UpVector, FVector::ForwardVector, false);
+	BuildFace(blockType, EFaceType::Down, FVector(0, 0, 0), FVector::ForwardVector, FVector::RightVector, true);
+	BuildFace(blockType, EFaceType::Up, FVector(0, 0, 100), FVector::ForwardVector, FVector::RightVector,false);
+	BuildFace(blockType, EFaceType::BackGround, FVector(0, 0, 0), FVector::UpVector, FVector::RightVector,false);
+	BuildFace(blockType, EFaceType::Forward, FVector(100, 0, 0), FVector::UpVector, FVector::RightVector,true);
 
 	mesh->ClearAllMeshSections();
 	mesh->CreateMeshSection(0, Vertices, Triangles, Normals, UVs, VertexColor, Tangents, true);
@@ -69,9 +69,14 @@ void ASelectedCubeBase::BuildBlock()
 	mesh->SetMaterial(0, Material);
 }
 
-void ASelectedCubeBase::BuildFace(EBlockType blocktype, EFaceType faceType, FVector wPos,bool reversed)
+void ASelectedCubeBase::BuildFace(EBlockType blocktype, EFaceType faceType, FVector wPos, FVector up, FVector right,bool reversed)
 {
 	int index = Vertices.Num();
+
+	Vertices.Add(wPos + up * 100 + right * 100);
+	Vertices.Add(wPos + right * 100);
+	Vertices.Add(wPos);
+	Vertices.Add(wPos + up * 100);
 
 	//FVector2D uvWidth = FVector2D(0.25f, 0.25f);
 	//FVector2D uvCorner = FVector2D(0.00f, 0.75f);
@@ -83,84 +88,77 @@ void ASelectedCubeBase::BuildFace(EBlockType blocktype, EFaceType faceType, FVec
 	//UVs.Add(FVector2D(uvCorner.X + uvWidth.X, uvCorner.Y + uvWidth.Y));
 	//UVs.Add(FVector2D(uvCorner.X + uvWidth.X, uvCorner.Y));
 
-	Triangles.Add(index + bTriangles[0]);
-	Triangles.Add(index + bTriangles[1]);
-	Triangles.Add(index + bTriangles[2]);
-	Triangles.Add(index + bTriangles[3]);
-	Triangles.Add(index + bTriangles[4]);
-	Triangles.Add(index + bTriangles[5]);
-
-	//if (reversed)
-	//{
-	//	Triangles.Add(index + 0);
-	//	Triangles.Add(index + 1);
-	//	Triangles.Add(index + 2);
-	//	Triangles.Add(index + 2);
-	//	Triangles.Add(index + 3);
-	//	Triangles.Add(index + 0);
-	//}
-	//else
-	//{
-	//	Triangles.Add(index + 1);
-	//	Triangles.Add(index + 0);
-	//	Triangles.Add(index + 2);
-	//	Triangles.Add(index + 3);
-	//	Triangles.Add(index + 2);
-	//	Triangles.Add(index + 0);
-	//}
+	if (reversed)
+	{
+		Triangles.Add(index + 0);
+		Triangles.Add(index + 1);
+		Triangles.Add(index + 2);
+		Triangles.Add(index + 2);
+		Triangles.Add(index + 3);
+		Triangles.Add(index + 0);
+	}
+	else
+	{
+		Triangles.Add(index + 1);
+		Triangles.Add(index + 0);
+		Triangles.Add(index + 2);
+		Triangles.Add(index + 3);
+		Triangles.Add(index + 2);
+		Triangles.Add(index + 0);
+	}
 
 	switch (faceType) {
 		case EFaceType::Up:
 		{
-			Vertices.Add(wPos + FVector::UpVector * 50 + FVector::LeftVector * 50 + FVector::ForwardVector * 50);
-			Vertices.Add(wPos + FVector::UpVector * 50 + FVector::LeftVector * 50 + FVector::BackwardVector * 50);
-			Vertices.Add(wPos + FVector::UpVector * 50 + FVector::RightVector * 50 + FVector::BackwardVector * 50);
-			Vertices.Add(wPos + FVector::UpVector * 50 + FVector::RightVector * 50 + FVector::ForwardVector * 50);
+			//Vertices.Add(wPos + FVector::UpVector * 50 + FVector::RightVector * 50 + FVector::BackwardVector * 50);
+			//Vertices.Add(wPos + FVector::UpVector * 50 + FVector::LeftVector * 50 + FVector::BackwardVector * 50);
+			//Vertices.Add(wPos + FVector::UpVector * 50 + FVector::LeftVector * 50 + FVector::ForwardVector * 50);
+			//Vertices.Add(wPos + FVector::UpVector * 50 + FVector::RightVector * 50 + FVector::ForwardVector * 50);
 			Normals.Append(bNormals0, ARRAY_COUNT(bNormals0));
 			break;
 		}
 		case EFaceType::Down:
 		{
-			Vertices.Add(wPos + FVector::DownVector * 50 + FVector::LeftVector * 50 + FVector::ForwardVector * 50);
-			Vertices.Add(wPos + FVector::DownVector * 50 + FVector::LeftVector * 50 + FVector::BackwardVector * 50);
-			Vertices.Add(wPos + FVector::DownVector * 50 + FVector::RightVector * 50 + FVector::BackwardVector * 50);
-			Vertices.Add(wPos + FVector::DownVector * 50 + FVector::RightVector * 50 + FVector::ForwardVector * 50);
+			//Vertices.Add(wPos + FVector::DownVector * 50 + FVector::LeftVector * 50 + FVector::ForwardVector * 50);
+			//Vertices.Add(wPos + FVector::DownVector * 50 + FVector::LeftVector * 50 + FVector::BackwardVector * 50);
+			//Vertices.Add(wPos + FVector::DownVector * 50 + FVector::RightVector * 50 + FVector::BackwardVector * 50);
+			//Vertices.Add(wPos + FVector::DownVector * 50 + FVector::RightVector * 50 + FVector::ForwardVector * 50);
 			Normals.Append(bNormals1, ARRAY_COUNT(bNormals1));
-			break;
-		}
-		case EFaceType::Left:
-		{
-			Vertices.Add(wPos + FVector::LeftVector * 50 + FVector::UpVector * 50 + FVector::ForwardVector * 50);
-			Vertices.Add(wPos + FVector::LeftVector * 50 + FVector::UpVector * 50 + FVector::BackwardVector * 50);
-			Vertices.Add(wPos + FVector::LeftVector * 50 + FVector::DownVector * 50 + FVector::BackwardVector * 50);
-			Vertices.Add(wPos + FVector::LeftVector * 50 + FVector::DownVector * 50 + FVector::ForwardVector * 50);
-			Normals.Append(bNormals2, ARRAY_COUNT(bNormals2));
 			break;
 		}
 		case EFaceType::Right:
 		{
-			Vertices.Add(wPos + FVector::RightVector * 50 + FVector::UpVector * 50 + FVector::ForwardVector * 50);
-			Vertices.Add(wPos + FVector::RightVector * 50 + FVector::UpVector * 50 + FVector::BackwardVector * 50);
-			Vertices.Add(wPos + FVector::RightVector * 50 + FVector::DownVector * 50 + FVector::BackwardVector * 50);
-			Vertices.Add(wPos + FVector::RightVector * 50 + FVector::DownVector * 50 + FVector::ForwardVector * 50);
+			//Vertices.Add(wPos + FVector::RightVector * 50 + FVector::UpVector * 50 + FVector::ForwardVector * 50);
+			//Vertices.Add(wPos + FVector::RightVector * 50 + FVector::DownVector * 50 + FVector::ForwardVector * 50);
+			//Vertices.Add(wPos + FVector::RightVector * 50 + FVector::DownVector * 50 + FVector::BackwardVector * 50);
+			//Vertices.Add(wPos + FVector::RightVector * 50 + FVector::UpVector * 50 + FVector::BackwardVector * 50);
 			Normals.Append(bNormals3, ARRAY_COUNT(bNormals3));
+			break;
+		}
+		case EFaceType::Left:
+		{
+			//Vertices.Add(wPos + FVector::LeftVector * 50 + FVector::UpVector * 50 + FVector::BackwardVector * 50);
+			//Vertices.Add(wPos + FVector::LeftVector * 50 + FVector::DownVector * 50 + FVector::BackwardVector * 50);
+			//Vertices.Add(wPos + FVector::LeftVector * 50 + FVector::DownVector * 50 + FVector::ForwardVector * 50);
+			//Vertices.Add(wPos + FVector::LeftVector * 50 + FVector::UpVector * 50 + FVector::ForwardVector * 50);
+			Normals.Append(bNormals2, ARRAY_COUNT(bNormals2));
 			break;
 		}
 		case EFaceType::Forward:
 		{
-			Vertices.Add(wPos + FVector::ForwardVector * 50 + FVector::LeftVector * 50 + FVector::UpVector * 50);
-			Vertices.Add(wPos + FVector::ForwardVector * 50 + FVector::LeftVector * 50 + FVector::DownVector * 50);
-			Vertices.Add(wPos + FVector::ForwardVector * 50 + FVector::RightVector * 50 + FVector::DownVector * 50);
-			Vertices.Add(wPos + FVector::ForwardVector * 50 + FVector::RightVector * 50 + FVector::UpVector * 50);
+			//Vertices.Add(wPos + FVector::ForwardVector * 50 + FVector::LeftVector * 50 + FVector::UpVector * 50);
+			//Vertices.Add(wPos + FVector::ForwardVector * 50 + FVector::LeftVector * 50 + FVector::DownVector * 50);
+			//Vertices.Add(wPos + FVector::ForwardVector * 50 + FVector::RightVector * 50 + FVector::DownVector * 50);
+			//Vertices.Add(wPos + FVector::ForwardVector * 50 + FVector::RightVector * 50 + FVector::UpVector * 50);
 			Normals.Append(bNormals4, ARRAY_COUNT(bNormals4));
 			break;
 		}
 		case EFaceType::BackGround:
 		{
-			Vertices.Add(wPos + FVector::BackwardVector * 50 + FVector::LeftVector * 50 + FVector::UpVector * 50);
-			Vertices.Add(wPos + FVector::BackwardVector * 50 + FVector::LeftVector * 50 + FVector::DownVector * 50);
-			Vertices.Add(wPos + FVector::BackwardVector * 50 + FVector::RightVector * 50 + FVector::DownVector * 50);
-			Vertices.Add(wPos + FVector::BackwardVector * 50 + FVector::RightVector * 50 + FVector::UpVector * 50);
+			//Vertices.Add(wPos + FVector::BackwardVector * 50 + FVector::RightVector * 50 + FVector::UpVector * 50);
+			//Vertices.Add(wPos + FVector::BackwardVector * 50 + FVector::RightVector * 50 + FVector::DownVector * 50);
+			//Vertices.Add(wPos + FVector::BackwardVector * 50 + FVector::LeftVector * 50 + FVector::DownVector * 50);
+			//Vertices.Add(wPos + FVector::BackwardVector * 50 + FVector::LeftVector * 50 + FVector::UpVector * 50);
 			Normals.Append(bNormals5, ARRAY_COUNT(bNormals5));
 			break;
 		}

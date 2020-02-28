@@ -34,7 +34,7 @@ void AWorldManagerBase::RandomFillMap()
 	FaultMap.SetNumUninitialized(WorldElements * WorldElements);
 	if (UseRandomSeed)
 	{
-		SeedAllRandomStreams();
+		//SeedAllRandomStreams();
 	}
 	for (int i= 0;i< WorldElements;i++)
 	{
@@ -94,6 +94,9 @@ void AWorldManagerBase::CreateWorld()
 
 	//创建高度图（大陆、高山和山丘不同起伏和噪声）Elevation
 
+	
+
+
 	//腐蚀（降水量）Rainfall
 
 	// 温度图，受高度和经纬度影响Temperature
@@ -128,4 +131,9 @@ void AWorldManagerBase::AddChunk()
 			//}
 		}
 	}
+}
+
+int32 AWorldManagerBase::GenerateHeight_Implementation(FVector wPos)
+{
+	return 0;
 }

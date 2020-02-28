@@ -43,5 +43,5 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void BuildBlock();
 
-	void BuildFace(EBlockType blocktype, EFaceType faceType, FVector wPos,bool reversed);
+	void BuildFace(EBlockType blocktype, EFaceType faceType, FVector wPos, FVector up, FVector right,bool reversed);
 };

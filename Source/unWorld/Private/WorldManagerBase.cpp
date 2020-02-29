@@ -10,17 +10,6 @@ AWorldManagerBase::AWorldManagerBase()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	ChunkSize = ChunkLineElement * VoxelSize;
-	ChunkSizeHalf = ChunkSize / 2;
-	WorldElements = WorldChunkElements * ChunkLineElement;
-	WorldSize = VoxelSize * WorldElements;
-
-	// 列表初始化
-	ElevationMap.SetNumUninitialized(WorldElements* WorldElements);
-	FaultMap.SetNumUninitialized(WorldElements * WorldElements);
-
-	//chunkCords.SetNumUninitialized(WorldChunkElements*WorldChunkElements);
-	//chunks.SetNumUninitialized(WorldChunkElements * WorldChunkElements);
 }
 
 // Called when the game starts or when spawned
@@ -94,41 +83,6 @@ void AWorldManagerBase::SmoothMap()
 	}
 }
 
-void AWorldManagerBase::CreateWorld()
-{
-	//创建断层 Fault
-	RandomFillMap();
-	for (int i = 0; i<4 ;i++)
-	{
-		SmoothMap();
-	}
-
-	//创建高度图（大陆、高山和山丘不同起伏和噪声）Elevation
-
-	GenerateElevation();
-
-	//腐蚀（降水量）Rainfall
-
-	// 温度图，受高度和经纬度影响Temperature
-
-	//地质排水情况Drainage，可以影响当地能否形成湖泊、湿地和河流。同样影响了当地的土质（进一步影响植被）
-
-	//生物群落，受到高度、降水量和温度等因素影响
-	//目前在计划中的生物群落包括草地、沙漠、森林、丛林、针叶林、苔原和地狱
-
-	//矿洞&地下城
-
-	//自然地标
-
-	//文明 细胞自动机 文明会选择合适的生物群落产生
-	//文明之间会因为空间上的距离、彼此文化冲突引发战争和贸易
-
-	//人工地标
-	//有了文明之后，文明会在合适的位置建立城镇，每个文明开始时通常有一个主城，几个堡垒和若干村镇
-
-	//确定玩家出生点 根据玩家的种族选择一个村镇出生
-}
-
 void AWorldManagerBase::AddChunk()
 {
 	for (int i=0;i<renderRange;i++)
@@ -171,18 +125,68 @@ bool AWorldManagerBase::CheckRadius(float x, float y)
 	return (FVector(x,y,0) - characterPosition).Size() < ChunkSize * renderRange;
 }
 
-void AWorldManagerBase::GenerateElevation()
+FVector2D AWorldManagerBase::GetEdgePoint(int width, int height)
 {
-	ElevationMap.SetNumUninitialized(WorldElements * WorldElements);
-	for (int32 i = 0; i < WorldElements; i++)
-	{
-		for (int32 j = 0; j < WorldElements; j++)
-		{
-			// 暂时进行一次取高度运算
-			ElevationMap[i + j * WorldElements] = GenerateHeight(FVector(i,j,0), 0.025f, 1);
-		}
-	}
+	return FVector2D(FMath::RandRange(0,width),FMath::RandRange(0,height));
 }
+
+void AWorldManagerBase::Voronoi(int width, int height, int numVoronoiPoint)
+{
+	TArray<TArray<FVector2D>> vPoints;
+	TArray<float> rands;
+
+	for (int i = 0; i < numVoronoiPoint; i++)
+	{
+		FVector2D v = GetEdgePoint(width, height);
+
+		for (int j = 0; j < 4; j++)
+		{
+			TArray<FVector2D> line;
+			rands.Add(1.0f);
+
+			line.Add(v);
+
+			//v += FVector2D(FMath::Rand() - 0.5f, FMath::Rand() - 0.5f) * Overworld.Width * 0.5f;
+			line.Add(v);
+			vPoints.Add(line);
+		}
+
+	}
+
+	//TArray<FVoronoiNode> nodes;
+	//for each(TArray<FVoronoiNode> pts in vPoints)
+	//{
+	//	for (int j = 0; j < pts.Num() - 1; j++)
+	//	{
+	//		//FVoronoiNode node = FVoronoiNode(pts[j],pts[j + 1]);
+	//		//nodes.Add(node);
+	//	}
+	//}
+
+	//for (int x = 0; x < width; x++)
+	//	for (int y = 0; y < height; y++)
+	//		Overworld.Map.Map[x, y].Faults = GetVoronoiValue(nodes, x, y);
+
+	//ScaleMap(Overworld.Map.Map, width, height, OverworldField.Faults);
+	//OverworldImageOperations.Distort(Overworld.Map.Map, width, height, 20, 0.01f, OverworldField.Faults);
+
+
+
+
+}
+//
+//void AWorldManagerBase::GenerateElevation()
+//{
+//	ElevationMap.SetNumUninitialized(WorldElements * WorldElements);
+//	for (int32 i = 0; i < WorldElements; i++)
+//	{
+//		for (int32 j = 0; j < WorldElements; j++)
+//		{
+//			// 暂时进行一次取高度运算
+//			ElevationMap[i + j * WorldElements] = GenerateNoiseHeight(FVector(i,j,1), 0.025f);
+//		}
+//	}
+//}
 
 bool AWorldManagerBase::UpdatePostion()
 {
@@ -201,11 +205,6 @@ bool AWorldManagerBase::UpdatePostion()
 	}
 }
 
-int32 AWorldManagerBase::GenerateHeight_Implementation(FVector wPos, float frequency, float amplitude)
-{
-	return 0;
-}
-
 void AWorldManagerBase::RemoveChunk()
 {
 	for (int i = 0;i < chunkCords.Num();i++ )
@@ -221,3 +220,30 @@ void AWorldManagerBase::RemoveChunk()
 		//TODO 在干掉Chunk之前，将数据储存起来
 	}
 }
+
+void AWorldManagerBase::CreateHeightFromLookup(TArray<float> lookup)
+{
+	for (int i = 0; i < WorldElements; i++)
+	{
+		for (int j = 0; j<WorldElements; i++)
+		{
+			OverworldCells[i+j*WorldElements].SetValue(EOverworldField::Height,FMath::Clamp(lookup[i + j * WorldElements],0.f,1.f));
+		}
+	}
+}
+
+void AWorldManagerBase::OnConstruction(const FTransform& Transform)
+{
+	ChunkSize = ChunkLineElement * VoxelSize;
+	ChunkSizeHalf = ChunkSize / 2;
+	WorldElements = WorldChunkElements * ChunkLineElement;
+	WorldSize = VoxelSize * WorldElements;
+
+	// 列表初始化
+	//ElevationMap.SetNumUninitialized(WorldElements* WorldElements);
+	//FaultMap.SetNumUninitialized(WorldElements * WorldElements);
+
+	//chunkCords.SetNumUninitialized(WorldChunkElements*WorldChunkElements);
+	//chunks.SetNumUninitialized(WorldChunkElements * WorldChunkElements);
+}
+

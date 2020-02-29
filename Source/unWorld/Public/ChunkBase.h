@@ -130,7 +130,7 @@ public:
 private:
 
 	//EBlockType GenerateBlockType(FVector wPos);
-	//int GenerateHeight(FVector wPos);
+	//int GenerateNoiseHeight(FVector wPos);
 
 	void BuildFace(EBlockType blocktype, EFaceType faceType, FVector wPos, FVector up, FVector right,bool reversed);
 

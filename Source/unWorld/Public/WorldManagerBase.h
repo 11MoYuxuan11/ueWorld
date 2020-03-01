@@ -5,89 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ChunkBase.h"
+#include "Overworld.h"
 #include "WorldManagerBase.generated.h"
-
-UENUM(BlueprintType)
-enum class EOverworldField : uint8
-{
-	// 侵蚀
-	Erosion = 0 UMETA(DisplayName ="Erosion"),
-	// 风化
-	Weathering=1 UMETA(DisplayName = "Weathering"),
-	// 断层
-	Faults=2 UMETA(DisplayName = "Faults"),
-	// 高度
-	Height=3 UMETA(DisplayName = "Height"),
-	// 温度
-	Temperature=4 UMETA(DisplayName = "Temperature"),
-	// 降雨量
-	Rainfall=5 UMETA(DisplayName = "Rainfall"),
-	// 数值字段
-	NumFields=7 UMETA(DisplayName = "NumFields")
-};
-
-USTRUCT(BlueprintType)
-struct FOverworldCell
-{
-	GENERATED_BODY()
-
-	UPROPERTY(BlueprintReadOnly)
-	uint8 Erosion;
-	UPROPERTY(BlueprintReadOnly)
-		uint8 Weathering;
-	UPROPERTY(BlueprintReadOnly)
-		uint8 Faults;
-	UPROPERTY(BlueprintReadOnly)
-		uint8 Height;
-	UPROPERTY(BlueprintReadOnly)
-		uint8 Temperature;
-	UPROPERTY(BlueprintReadOnly)
-		uint8 Rainfall;
-
-	float GetValue(EOverworldField fieldType)
-	{
-		switch (fieldType)
-		{
-		case EOverworldField::Erosion:
-			return Erosion / 255.f;
-		case EOverworldField::Weathering:
-			return Weathering / 255.f;
-		case EOverworldField::Faults:
-			return Faults / 255.f;
-		case EOverworldField::Height:
-			return Height / 255.f;
-		case EOverworldField::Temperature:
-			return Temperature / 255.f;
-		case EOverworldField::Rainfall:
-			return Rainfall / 255.f;
-		}
-	}
-
-	void SetValue(EOverworldField fieldType, float Value) {
-		uint8 _value = FMath::Min(FMath::Max(Value * 255.f, 0.f), 255.f);
-		switch (fieldType)
-		{
-		case EOverworldField::Erosion:
-			Erosion = _value;
-			break;
-		case EOverworldField::Weathering:
-			Weathering = _value;
-			break;
-		case EOverworldField::Faults:
-			Faults = _value;
-			break;
-		case EOverworldField::Height:
-			Height = _value;
-			break;
-		case EOverworldField::Temperature:
-			Temperature = _value;
-			break;
-		case EOverworldField::Rainfall:
-			Rainfall = _value;
-			break;
-		}
-	}
-};
 
 UCLASS()
 class UNWORLD_API AWorldManagerBase : public AActor
@@ -122,7 +41,7 @@ public:
 	int32 renderRange = 6;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
-	int32 WorldElements;
+	int32 WorldElements = 100;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Setting")
 	int32 WorldChunkElements = 1024;
@@ -139,6 +58,10 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	TArray<FOverworldCell> OverworldCells;
+
+	UPROPERTY(BlueprintReadOnly)
+	//每个Chunk都包含16*16*256个block
+	TArray<AChunkBase*> chunks;
 
 protected:
 	// Called when the game starts or when spawned
@@ -169,6 +92,7 @@ public:
 	//计算降雨值
 	void CalculateRain(int32 width,int32 height);
 
+	UFUNCTION(BlueprintCallable)
 	void CreateHeightFromLookup(TArray<float> lookup);
 
 	virtual void OnConstruction(const FTransform& Transform) override;
@@ -178,9 +102,7 @@ private:
 	FVector characterPosition;
 
 	TArray<FVector2D> chunkCords;
-
-	//每个Chunk都包含16*16*256个block
-	TArray<AChunkBase*> chunks;
+	
 
 private:
 	bool CheckRadius(float x,float y);

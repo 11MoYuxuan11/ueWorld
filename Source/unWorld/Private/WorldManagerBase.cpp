@@ -24,9 +24,9 @@ void AWorldManagerBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UpdatePostion();
-	RemoveChunk();
-	AddChunk();
+	//UpdatePostion();
+	//RemoveChunk();
+	//AddChunk();
 }
 
 void AWorldManagerBase::RandomFillMap()
@@ -223,11 +223,12 @@ void AWorldManagerBase::RemoveChunk()
 
 void AWorldManagerBase::CreateHeightFromLookup(TArray<float> lookup)
 {
+	OverworldCells.SetNumUninitialized(WorldElements* WorldElements);
 	for (int i = 0; i < WorldElements; i++)
 	{
-		for (int j = 0; j<WorldElements; i++)
+		for (int j = 0; j<WorldElements; j++)
 		{
-			OverworldCells[i+j*WorldElements].SetValue(EOverworldField::Height,FMath::Clamp(lookup[i + j * WorldElements],0.f,1.f));
+			OverworldCells[i + j * WorldElements].SetValue(EOverworldField::Height, FMath::Clamp(lookup[i + j * WorldElements], 0.f, 1.f));
 		}
 	}
 }

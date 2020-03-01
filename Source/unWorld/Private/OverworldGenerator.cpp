@@ -28,14 +28,14 @@ void AOverworldGenerator::Tick(float DeltaTime)
 void AOverworldGenerator::GenerateWorld()
 {
 	// 初始化
-	if (WorldManager != nullptr)
-	{
-		WorldManager->OverworldCells.SetNumUninitialized(WorldManager->WorldElements* WorldManager->WorldElements);
-		
-		// 高度图
-		TArray<float> heightMapLookup = GenerateHeightMapLookup(WorldManager->WorldElements, WorldManager->WorldElements);
-		WorldManager->CreateHeightFromLookup(heightMapLookup);
-	}
+	//if (WorldManager != nullptr)
+	//{
+	//	WorldManager->OverworldCells.SetNumUninitialized(WorldManager->WorldElements* WorldManager->WorldElements);
+	//	
+	//	// 高度图
+	//	TArray<float> heightMapLookup = GenerateHeightMapLookup(WorldManager->WorldElements, WorldManager->WorldElements);
+	//	WorldManager->CreateHeightFromLookup(heightMapLookup);
+	//}
 }
 
 TArray<float> AOverworldGenerator::GenerateHeightMapLookup(int width, int height)
@@ -65,6 +65,7 @@ TArray<float> AOverworldGenerator::GenerateHeightMapLookup(int width, int height
 			// 悬崖
 			float cliffs = GenerateNoiseHeight(FVector(x, y, 200), continentSize) + 0.5f;
 			float h = FMath::Pow(FMath::Clamp((continent * mountain) + hill, 0.f, 1.f), 1);
+
 			h += smallnoise;
 			h += 0.4f;
 			h = ((int)(h * invCliffHeight)) * cliffHeight;

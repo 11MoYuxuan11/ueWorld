@@ -38,23 +38,23 @@ void AChunkBase::Tick(float DeltaTime)
 
 void AChunkBase::OnConstruction(const FTransform& Transform)
 {
-	chunkZElements = 80;
-	chunkTotalElements = chunkElements * chunkElements * chunkZElements;
-	chunkLineElementsP2 = chunkElements * chunkElements;
-	voxelSizeHalf = voxelSize / 2;
+	//chunkZElements = 80;
+	//chunkTotalElements = chunkElements * chunkElements * chunkZElements;
+	//chunkLineElementsP2 = chunkElements * chunkElements;
+	//voxelSizeHalf = voxelSize / 2;
 
-	FString string = "Voxel_" + FString::FromInt(chunkXindex) + "_" + FString::FromInt(chunkYindex);
-	FName name = FName(*string);
-	proceduralComponent = NewObject<UProceduralMeshComponent>(this, name);
-	proceduralComponent->RegisterComponent();
+	//FString string = "Voxel_" + FString::FromInt(chunkXindex) + "_" + FString::FromInt(chunkYindex);
+	//FName name = FName(*string);
+	//proceduralComponent = NewObject<UProceduralMeshComponent>(this, name);
+	//proceduralComponent->RegisterComponent();
 
-	RootComponent = proceduralComponent;
-	RootComponent->SetWorldTransform(Transform);
+	//RootComponent = proceduralComponent;
+	//RootComponent->SetWorldTransform(Transform);
 
-	Super::OnConstruction(Transform);
+	//Super::OnConstruction(Transform);
 
-	Initmap();
-	UpdateMesh();
+	//Initmap();
+	//UpdateMesh();
 }
 
 void AChunkBase::Initmap()

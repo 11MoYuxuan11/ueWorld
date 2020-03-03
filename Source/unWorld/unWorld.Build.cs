@@ -8,13 +8,20 @@ public class unWorld : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay" });
+		PublicDependencyModuleNames.AddRange(new string[] { 
+			"Core", 
+			"CoreUObject", 
+			"Engine"
+		});
 
 		PrivateDependencyModuleNames.AddRange(new string[]{
 			"VictoryBPLibrary",
-			//"VoxelWorld",
-			//"SimplexNoise",
-			"ProceduralMeshComponent"
+			"ProceduralMeshComponent",
+			"InputCore",
+			"HeadMountedDisplay",
+			"GameplayAbilities",
+			"GameplayTags",
+			"GameplayTasks"
 		});
 		PrivateIncludePaths.AddRange(new string[]
 		{

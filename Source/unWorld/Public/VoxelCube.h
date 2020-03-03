@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ProceduralMeshComponent.h"
-#include "ChunkBase.h"
+#include "Chunk.h"
 #include "VoxelCube.generated.h"
 
 UCLASS()

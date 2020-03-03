@@ -13,3 +13,5 @@ Saved
 *.xcodeproj
 *.xcworkspace
 /Build
+/Content/ModularRPGHeroesPolyart/CharacterBP
+/Content/ModularRPGHeroesPolyart/Maps

@@ -12,16 +12,8 @@ BuildChunk -> BuildBlock -> BuildFace
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "ProceduralMeshComponent.h"
+#include "Chunk.h"
 #include "ChunkBase.generated.h"
-
-UENUM(BlueprintType)
-enum class EBlockType : uint8
-{
-	None = 0,
-	Dirt = 1,
-	Grass = 3,
-	Gravel = 4,
-};
 
 UCLASS()
 class UNWORLD_API AChunkBase : public AActor
@@ -141,17 +133,6 @@ private:
 
 	//SCubeData ToCubeData(Byte data);
 	//Byte ToByte(SCubeData sdata);
-};
-
-UENUM(BlueprintType)
-enum class EFaceType : uint8
-{
-	Up,
-	Down,
-	Right,
-	Left,
-	Forward,
-	BackGround
 };
 
 USTRUCT(BlueprintType)

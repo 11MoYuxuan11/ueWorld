@@ -22,6 +22,7 @@ public class unWorld : ModuleRules
 			"GameplayAbilities",
 			"GameplayTags",
 			"GameplayTasks"
+			//"SimplexNoise"
 		});
 		PrivateIncludePaths.AddRange(new string[]
 		{

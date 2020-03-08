@@ -4,6 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Abilities/CoreAttributeSet.h"
+#include "Abilities/RPGAbilitySystemComponent.h"
 #include "unWorldCharacter.generated.h"
 
 UCLASS(config=Game)
@@ -18,8 +20,12 @@ class AunWorldCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
 public:
 	AunWorldCharacter();
+
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void UnPossessed() override;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -28,6 +34,9 @@ public:
 	/** Base look up/down rate, in deg/sec. Other scaling may affect final rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
+
+	UPROPERTY(BlueprintReadOnly)
+	int32 CharacterLevel;
 
 protected:
 
@@ -58,10 +67,31 @@ protected:
 	/** Handler for when a touch input stops. */
 	void TouchStopped(ETouchIndex::Type FingerIndex, FVector Location);
 
+	UPROPERTY()
+	URPGAbilitySystemComponent* AbilitySystemComponent;
+
+	UPROPERTY()
+	UCoreAttributeSet* AttributeSet;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category= Abilities)
+	TArray<TSubclassOf< UGameplayEffect>> PassiveGameplayEffects;
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	// End of APawn interface
+
+	UPROPERTY()
+	int32 bAbilitiesInitialized;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHealthChanged(float DeltaValue,const struct FGameplayTagContainer& EventTags);
+
+	void AddStartupGameplayAbilities();
+
+
+	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
+
 
 public:
 	/** Returns CameraBoom subobject **/

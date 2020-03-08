@@ -45,6 +45,30 @@ AunWorldCharacter::AunWorldCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+	AbilitySystemComponent = CreateDefaultSubobject<URPGAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	AbilitySystemComponent->SetIsReplicated(true);
+
+	AttributeSet = CreateDefaultSubobject<UCoreAttributeSet>(TEXT("AttributeSet"));
+	
+	CharacterLevel = 1;
+}
+
+void AunWorldCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	if (AbilitySystemComponent)
+	{
+		AbilitySystemComponent->InitAbilityActorInfo(this,this);
+		// 启动技能初始化
+
+	}
+}
+
+void AunWorldCharacter::UnPossessed()
+{
+	Super::UnPossessed();
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -74,6 +98,34 @@ void AunWorldCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AunWorldCharacter::OnResetVR);
+}
+
+void AunWorldCharacter::AddStartupGameplayAbilities()
+{
+	// TODO 技能初始化
+
+
+	// 效果初始化
+	for (TSubclassOf<UGameplayEffect>& gameplayEffect : PassiveGameplayEffects)
+	{
+		FGameplayEffectContextHandle effectHandle = AbilitySystemComponent->MakeEffectContext();
+		effectHandle.AddSourceObject(this);
+
+		FGameplayEffectSpecHandle newHandle = AbilitySystemComponent->MakeOutgoingSpec(gameplayEffect,CharacterLevel,effectHandle);
+		if (newHandle.IsValid())
+		{
+			FActiveGameplayEffectHandle activeGEHandle = AbilitySystemComponent->ApplyGameplayEffectSpecToTarget(*newHandle.Data.Get(),AbilitySystemComponent);	
+		}
+	}
+
+}
+
+void AunWorldCharacter::HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags)
+{
+	if (bAbilitiesInitialized)
+	{
+		OnHealthChanged(DeltaValue, EventTags);
+	}
 }
 
 

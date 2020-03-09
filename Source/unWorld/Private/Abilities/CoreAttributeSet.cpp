@@ -17,8 +17,8 @@ void UCoreAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UCoreAttributeSet, Health);
-	DOREPLIFETIME(UCoreAttributeSet, MaxHealth);
+	//DOREPLIFETIME(UCoreAttributeSet, Health);
+	//DOREPLIFETIME(UCoreAttributeSet, MaxHealth);
 }
 
 void UCoreAttributeSet::OnRep_Health() {
@@ -82,7 +82,8 @@ void UCoreAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 		if (TargetCharacter)
 		{
-			TargetCharacter->HandleHealthChanged(DeltaValue, SourceTags);
+			//TargetCharacter->HandleHealthChanged(DeltaValue,SourceTags);
+			//TargetCharacter->HandleHealthChanged(DeltaValue, SourceTags);
 		}
 	}
 }

@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "Abilities/CoreAttributeSet.h"
+#include "AbilitySystemInterface.h"
 #include "Abilities/RPGAbilitySystemComponent.h"
+#include "Abilities/GameplayAbilityBase.h"
+#include "Abilities/CoreAttributeSet.h"
 #include "unWorldCharacter.generated.h"
 
 UCLASS(config=Game)
-class AunWorldCharacter : public ACharacter
+class AunWorldCharacter : public ACharacter,public IAbilitySystemInterface
 {
 	GENERATED_BODY()
 
@@ -26,6 +28,14 @@ public:
 
 	virtual void PossessedBy(AController* NewController) override;
 	virtual void UnPossessed() override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+
+	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	UFUNCTION(BlueprintCallable)
+	virtual float GetHealth() const;
+	UFUNCTION(BlueprintCallable)
+	virtual float GetMaxHealth() const;
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
@@ -35,13 +45,19 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
-	UPROPERTY(BlueprintReadOnly)
-	int32 CharacterLevel;
-
 protected:
 
+	UPROPERTY(EditAnywhere,Replicated,Category = Abilities)
+	int32 CharacterLevel;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Abilities)
+	TArray<TSubclassOf<UGameplayAbilityBase>> GameplayAbilities;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Abilities)
+	TArray<TSubclassOf<UGameplayEffect>> PassiveGameplayEffects;
+
 	/** Resets HMD orientation in VR. */
-	void OnResetVR();
+	//void OnResetVR();
 
 	/** Called for forwards/backward input */
 	void MoveForward(float Value);
@@ -73,9 +89,6 @@ protected:
 	UPROPERTY()
 	UCoreAttributeSet* AttributeSet;
 
-	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category= Abilities)
-	TArray<TSubclassOf< UGameplayEffect>> PassiveGameplayEffects;
-
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -89,11 +102,9 @@ protected:
 
 	void AddStartupGameplayAbilities();
 
+public:
 
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
-
-
-public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/

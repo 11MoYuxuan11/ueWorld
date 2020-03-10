@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AttributeSet.h"
 #include "AbilitySystemComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "CoreAttributeSet.generated.h"
 
 #define ATTRIBUTE_ACCESSORS(ClassName, PropertyName) \
@@ -14,7 +15,7 @@
 	GAMEPLAYATTRIBUTE_VALUE_INITTER(PropertyName)
 
 /**
- * 
+ * ∫À–ƒ Ù–‘ºØ
  */
 UCLASS()
 class UNWORLD_API UCoreAttributeSet : public UAttributeSet

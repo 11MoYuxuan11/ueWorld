@@ -51,6 +51,7 @@ AunWorldCharacter::AunWorldCharacter()
 	AttributeSet = CreateDefaultSubobject<UCoreAttributeSet>(TEXT("AttributeSet"));
 	
 	CharacterLevel = 1;
+	bAbilitiesInitialized = false;
 }
 
 void AunWorldCharacter::PossessedBy(AController* NewController)
@@ -61,7 +62,7 @@ void AunWorldCharacter::PossessedBy(AController* NewController)
 	{
 		AbilitySystemComponent->InitAbilityActorInfo(this,this);
 		// 启动技能初始化
-
+		AddStartupGameplayAbilities();
 	}
 }
 
@@ -69,6 +70,28 @@ void AunWorldCharacter::UnPossessed()
 {
 	Super::UnPossessed();
 
+}
+
+void AunWorldCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AunWorldCharacter,CharacterLevel);
+}
+
+UAbilitySystemComponent* AunWorldCharacter::GetAbilitySystemComponent() const
+{
+	return AbilitySystemComponent;
+}
+
+float AunWorldCharacter::GetHealth() const
+{
+	return AttributeSet->GetHealth();
+}
+
+float AunWorldCharacter::GetMaxHealth() const
+{
+	return AttributeSet->GetMaxHealth();
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -97,13 +120,20 @@ void AunWorldCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerI
 	PlayerInputComponent->BindTouch(IE_Released, this, &AunWorldCharacter::TouchStopped);
 
 	// VR headset functionality
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AunWorldCharacter::OnResetVR);
+	//PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AunWorldCharacter::OnResetVR);
 }
 
 void AunWorldCharacter::AddStartupGameplayAbilities()
 {
-	// TODO 技能初始化
+	check(AbilitySystemComponent)
 
+	if ( bAbilitiesInitialized ) return;
+
+	// 技能初始化
+	for (TSubclassOf<UGameplayAbilityBase>& StartupAbility : GameplayAbilities)
+	{
+		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility,CharacterLevel,INDEX_NONE,this));
+	}
 
 	// 效果初始化
 	for (TSubclassOf<UGameplayEffect>& gameplayEffect : PassiveGameplayEffects)
@@ -118,6 +148,7 @@ void AunWorldCharacter::AddStartupGameplayAbilities()
 		}
 	}
 
+	bAbilitiesInitialized = true;
 }
 
 void AunWorldCharacter::HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags)
@@ -129,10 +160,10 @@ void AunWorldCharacter::HandleHealthChanged(float DeltaValue, const struct FGame
 }
 
 
-void AunWorldCharacter::OnResetVR()
-{
-	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
-}
+//void AunWorldCharacter::OnResetVR()
+//{
+//	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
+//}
 
 void AunWorldCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
 {

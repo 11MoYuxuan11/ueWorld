@@ -13,12 +13,13 @@ UCoreAttributeSet::UCoreAttributeSet():
 {
 }
 
+//  Ù–‘Õ¨≤Ω
 void UCoreAttributeSet::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	//DOREPLIFETIME(UCoreAttributeSet, Health);
-	//DOREPLIFETIME(UCoreAttributeSet, MaxHealth);
+	DOREPLIFETIME(UCoreAttributeSet, Health);
+	DOREPLIFETIME(UCoreAttributeSet, MaxHealth);
 }
 
 void UCoreAttributeSet::OnRep_Health() {
@@ -36,14 +37,13 @@ void UCoreAttributeSet::AdjustAttributeFormMaxChange(FGameplayAttributeData& Aff
 	UAbilitySystemComponent* AbilityComponent = GetOwningAbilitySystemComponent();
 	const float CurrentMaxValue = MaxAttribute.GetCurrentValue();
 
-	if (!FMath::IsNearlyEqual(CurrentMaxValue,NewMaxValue) && AbilityComponent )
-	{
-		const float CurrentValue = AffectedAttribute.GetCurrentValue();
-		float NewDelta = (CurrentMaxValue > 0.f) ? (CurrentValue * NewMaxValue / CurrentMaxValue) : NewMaxValue;
+	if (FMath::IsNearlyEqual(CurrentMaxValue,NewMaxValue) && AbilityComponent ) return;
 
-		AbilityComponent->ApplyModToAttributeUnsafe(AffectedAttributeProperty,EGameplayModOp::Additive,NewDelta);
-	}
+	const float CurrentValue = AffectedAttribute.GetCurrentValue();
+	//float NewDelta = (CurrentMaxValue > 0.f) ? (CurrentValue * NewMaxValue / CurrentMaxValue) : NewMaxValue;
+	float NewDelta = NewMaxValue;
 
+	AbilityComponent->ApplyModToAttributeUnsafe(AffectedAttributeProperty, EGameplayModOp::Additive, NewDelta);
 }
 
 void UCoreAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue) 
@@ -80,10 +80,9 @@ void UCoreAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	{
 		SetHealth(FMath::Clamp(GetHealth(),0.f,GetMaxHealth()));
 
-		if (TargetCharacter)
-		{
-			//TargetCharacter->HandleHealthChanged(DeltaValue,SourceTags);
-			//TargetCharacter->HandleHealthChanged(DeltaValue, SourceTags);
-		}
+		if (!TargetCharacter) return;
+
+		//TargetCharacter->HandleHealthChanged(DeltaValue,SourceTags);
+		TargetCharacter->HandleHealthChanged(DeltaValue, SourceTags);
 	}
 }

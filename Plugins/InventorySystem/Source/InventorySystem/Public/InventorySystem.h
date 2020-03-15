@@ -13,3 +13,5 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 };
+
+INVENTORYSYSTEM_API DECLARE_LOG_CATEGORY_EXTERN(LogInventory, Log, All);

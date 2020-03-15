@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "Styling/SlateBrush.h"
+#include "AssetManagerBase.h"
 #include "ItemDataAsset.generated.h"
 
 /**

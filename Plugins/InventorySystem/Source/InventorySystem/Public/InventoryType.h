@@ -120,3 +120,7 @@ struct INVENTORYSYSTEM_API FItemData
 /** Delegate called when an inventory item changes */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInventoryItemChanged, bool, bAdded, UItemDataAsset*, Item);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnInventoryItemChangedNative, bool, UItemDataAsset*);
+
+/** Delegate called when the contents of an inventory slot change */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnSlottedItemChanged, FItemSlot, ItemSlot, UItemDataAsset*, Item);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnSlottedItemChangedNative, FItemSlot, UItemDataAsset*);

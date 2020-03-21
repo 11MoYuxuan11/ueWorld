@@ -23,7 +23,7 @@ bool UInventoryComponent::AddInventoryItem(UItemDataAsset* NewItem, int32 ItemCo
 		return false;
 	}
 
-	if (true)
+	if (ItemCount <=0 || ItemLevel <= 0)
 	{
 		//UE_LOG(LogInventory, Warning, TEXT("AddInventoryItem: Failed trying to add Item %s with negative count or level!"), *NewItem->GetName());
 		return false;
@@ -52,7 +52,7 @@ bool UInventoryComponent::AddInventoryItem(UItemDataAsset* NewItem, int32 ItemCo
 
 	if (bChanged)
 	{
-		// If anything changed, write to save game
+		//DOTO If anything changed, write to save game
 		//SaveInventory();
 		return true;
 	}
@@ -103,6 +103,7 @@ bool UInventoryComponent::RemoveInventoryItem(UItemDataAsset* RemovedItem, int32
 			{
 				Pair.Value = nullptr;
 				//TODO 装备槽改变通知
+				NotifySlottedItemChanged(Pair.Key,Pair.Value);
 			}
 		}
 	}
@@ -110,6 +111,7 @@ bool UInventoryComponent::RemoveInventoryItem(UItemDataAsset* RemovedItem, int32
 	NotifyInventoryItemChanged(false, RemovedItem);
 
 	//TODO SaveGame
+
 	return true;
 }
 
@@ -144,7 +146,7 @@ void UInventoryComponent::NotifyInventoryItemChanged(bool bAdded, UItemDataAsset
 {
 	// Notify native before blueprint
 	OnInventoryItemChangedNative.Broadcast(bAdded, Item);
-	//OnInventoryItemChanged.Broadcast(bAdded, Item);
+	OnInventoryItemChanged.Broadcast(bAdded, Item);
 
 	// Call BP update event
 	InventoryItemChanged(bAdded, Item);
@@ -194,7 +196,8 @@ bool UInventoryComponent::SetSlottedItem(FItemSlot ItemSlot, UItemDataAsset* Ite
 
 	if (bFound)
 	{
-		// SaveInventory();
+		//TODO SaveInventory();
+
 		return true;
 	}
 
@@ -222,6 +225,7 @@ void UInventoryComponent::GetSlottedItems(TArray<UItemDataAsset*>& Items, FPrima
 		}
 	}
 }
+
 
 void UInventoryComponent::FillEmptySlots()
 {
@@ -262,7 +266,7 @@ bool UInventoryComponent::FillEmptySlotWithItem(UItemDataAsset* NewItem)
 	if (EmptySlot.IsValid())
 	{
 		SlottedItems[EmptySlot] = NewItem;
-		//NotifySlottedItemChanged(EmptySlot, NewItem);
+		NotifySlottedItemChanged(EmptySlot, NewItem);
 		return true;
 	}
 

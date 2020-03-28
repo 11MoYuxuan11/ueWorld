@@ -19,13 +19,13 @@ bool UInventoryComponent::AddInventoryItem(UItemDataAsset* NewItem, int32 ItemCo
 	bool bChanged = false;
 	if (!NewItem) {
 		// 报错，直接返回
-		//UE_LOG(LogInventory, Warning, TEXT("AddInventoryItem: Failed trying to add null Item!"));
+		UE_LOG(LogInventory, Warning, TEXT("AddInventoryItem: Failed trying to add null Item!"));
 		return false;
 	}
 
 	if (ItemCount <=0 || ItemLevel <= 0)
 	{
-		//UE_LOG(LogInventory, Warning, TEXT("AddInventoryItem: Failed trying to add Item %s with negative count or level!"), *NewItem->GetName());
+		UE_LOG(LogInventory, Warning, TEXT("AddInventoryItem: Failed trying to add Item %s with negative count or level!"), *NewItem->GetName());
 		return false;
 	}
 

@@ -18,3 +18,6 @@ void FInventorySystemModule::ShutdownModule()
 #undef LOCTEXT_NAMESPACE
 	
 IMPLEMENT_MODULE(FInventorySystemModule, InventorySystem)
+
+/** Logging definitions */
+DEFINE_LOG_CATEGORY(LogInventory);

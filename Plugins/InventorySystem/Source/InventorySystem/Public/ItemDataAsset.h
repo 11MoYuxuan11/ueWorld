@@ -19,6 +19,7 @@ class INVENTORYSYSTEM_API UItemDataAsset : public UPrimaryDataAsset
 public:
     UItemDataAsset()
         : Price(0)
+        , Stacked(0)
         , MaxCount(1)
         , MaxLevel(1)
         , AbilityLevel(1)
@@ -39,6 +40,10 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
     int32 Price;
+
+    // 堆叠数量，如果为0则表示无上限，默认为1
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Item)
+    int32 Stacked;
 
     /** Maximum number of instances that can be in inventory at once, <= 0 means infinite */
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Max)

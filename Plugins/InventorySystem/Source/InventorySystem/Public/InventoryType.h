@@ -74,6 +74,9 @@ struct INVENTORYSYSTEM_API FItemData
 		, ItemLevel(InItemLevel)
 	{}
 
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
+	//UItemDataAsset* ItemAsset;
+
 	/** The number of instances of this item in the inventory, can never be below 1 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
 		int32 ItemCount;

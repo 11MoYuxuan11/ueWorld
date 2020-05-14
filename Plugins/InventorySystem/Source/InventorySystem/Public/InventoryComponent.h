@@ -20,6 +20,7 @@ public:
 
 	/** Map of all items owned by this player, from definition to data */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
+	//TArray<FItemData> InventoryData;
 	TMap<UItemDataAsset*, FItemData> InventoryData;
 
 	/** Map of slot, from type/num to item, initialized from ItemSlotsPerType on RPGGameInstanceBase */

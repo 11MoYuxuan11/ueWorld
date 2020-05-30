@@ -148,6 +148,8 @@ void AunWorldCharacter::AddStartupGameplayAbilities()
 		}
 	}
 
+
+
 	bAbilitiesInitialized = true;
 }
 
@@ -215,3 +217,4 @@ void AunWorldCharacter::MoveRight(float Value)
 		AddMovementInput(Direction, Value);
 	}
 }
+

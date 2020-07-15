@@ -48,6 +48,8 @@ AunWorldCharacter::AunWorldCharacter()
 	AbilitySystemComponent = CreateDefaultSubobject<URPGAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	AbilitySystemComponent->SetIsReplicated(true);
 
+
+
 	AttributeSet = CreateDefaultSubobject<UCoreAttributeSet>(TEXT("AttributeSet"));
 	
 	CharacterLevel = 1;
@@ -218,3 +220,80 @@ void AunWorldCharacter::MoveRight(float Value)
 	}
 }
 
+bool AunWorldCharacter::ActivateAbilitiesWithItemSlot(TSubclassOf<UGameplayAbility> ItemAbility,bool bAllowRemoteActivation) {
+	
+	FGameplayAbilitySpecHandle FoundHandle = AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(ItemAbility, CharacterLevel, INDEX_NONE, this));
+	
+	if ( &FoundHandle && AbilitySystemComponent)
+	{
+		return AbilitySystemComponent->TryActivateAbility(FoundHandle, bAllowRemoteActivation);
+	}
+
+	return false;
+}
+
+//void AunWorldCharacter::RefreshSlottedGameplayAbilities() {
+//	if (bAbilitiesInitialized)
+//	{
+//		// 刷新任何无效能力并添加新的
+//		RemoveSlottedGameplayAbilities(false);
+//		AddSlottedGameplayAbilities();
+//	}
+//}
+//
+//void AunWorldCharacter::RemoveSlottedGameplayAbilities(bool bRemoveAll)
+//{
+//	TMap<FRPGItemSlot, FGameplayAbilitySpec> SlottedAbilitySpecs;
+//
+//	if (!bRemoveAll)
+//	{
+//		// Fill in map so we can compare
+//		FillSlottedAbilitySpecs(SlottedAbilitySpecs);
+//	}
+//
+//	for (TPair<FRPGItemSlot, FGameplayAbilitySpecHandle>& ExistingPair : SlottedAbilities)
+//	{
+//		FGameplayAbilitySpec* FoundSpec = AbilitySystemComponent->FindAbilitySpecFromHandle(ExistingPair.Value);
+//		bool bShouldRemove = bRemoveAll || !FoundSpec;
+//
+//		if (!bShouldRemove)
+//		{
+//			// Need to check desired ability specs, if we got here FoundSpec is valid
+//			FGameplayAbilitySpec* DesiredSpec = SlottedAbilitySpecs.Find(ExistingPair.Key);
+//
+//			if (!DesiredSpec || DesiredSpec->Ability != FoundSpec->Ability || DesiredSpec->SourceObject != FoundSpec->SourceObject)
+//			{
+//				bShouldRemove = true;
+//			}
+//		}
+//
+//		if (bShouldRemove)
+//		{
+//			if (FoundSpec)
+//			{
+//				// Need to remove registered ability
+//				AbilitySystemComponent->ClearAbility(ExistingPair.Value);
+//			}
+//
+//			// Make sure handle is cleared even if ability wasn't found
+//			ExistingPair.Value = FGameplayAbilitySpecHandle();
+//		}
+//	}
+//}
+//
+//void AunWorldCharacter::AddSlottedGameplayAbilities()
+//{
+//	TMap<FRPGItemSlot, FGameplayAbilitySpec> SlottedAbilitySpecs;
+//	FillSlottedAbilitySpecs(SlottedAbilitySpecs);
+//
+//	// Now add abilities if needed
+//	for (const TPair<FRPGItemSlot, FGameplayAbilitySpec>& SpecPair : SlottedAbilitySpecs)
+//	{
+//		FGameplayAbilitySpecHandle& SpecHandle = SlottedAbilities.FindOrAdd(SpecPair.Key);
+//
+//		if (!SpecHandle.IsValid())
+//		{
+//			SpecHandle = AbilitySystemComponent->GiveAbility(SpecPair.Value);
+//		}
+//	}
+//}

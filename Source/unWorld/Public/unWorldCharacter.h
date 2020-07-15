@@ -45,6 +45,12 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
 	float BaseLookUpRate;
 
+	UFUNCTION(BlueprintCallable, Category = "Abilities")
+	bool ActivateAbilitiesWithItemSlot(TSubclassOf<UGameplayAbility> ItemAbility, bool bAllowRemoteActivation);
+
+	//UFUNCTION(BlueprintImplementableEvent)
+	//void RefreshSlottedGameplayAbilities();
+
 protected:
 
 	UPROPERTY(EditAnywhere,Replicated,Category = Abilities)

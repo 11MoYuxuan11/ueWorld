@@ -10,19 +10,19 @@
 UENUM(BlueprintType)
 enum class EOverworldField : uint8
 {
-	// ÇÖÊ´
+	// ä¾µèš€
 	Erosion = 0 UMETA(DisplayName = "Erosion"),
-	// ·ç»¯
+	// é£åŒ–
 	Weathering = 1 UMETA(DisplayName = "Weathering"),
-	// ¶Ï²ã
+	// æ–­å±‚
 	Faults = 2 UMETA(DisplayName = "Faults"),
-	// ¸ß¶È
+	// é«˜åº¦
 	Height = 3 UMETA(DisplayName = "Height"),
-	// ÎÂ¶È
+	// æ¸©åº¦
 	Temperature = 4 UMETA(DisplayName = "Temperature"),
-	// ½µÓêÁ¿
+	// é™é›¨é‡
 	Rainfall = 5 UMETA(DisplayName = "Rainfall"),
-	// ÊıÖµ×Ö¶Î
+	// æ•°å€¼å­—æ®µ
 	NumFields = 7 UMETA(DisplayName = "NumFields")
 };
 
@@ -141,7 +141,7 @@ public:
 	TArray<FOverworldCell> OverworldCells;
 
 	UPROPERTY(BlueprintReadOnly)
-	//Ã¿¸öChunk¶¼°üº¬16*16*256¸öblock
+	//æ¯ä¸ªChunkéƒ½åŒ…å«16*16*256ä¸ªblock
 	TArray<AChunkBase*> chunks;
 
 protected:
@@ -170,7 +170,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RemoveChunk();
 
-	//¼ÆËã½µÓêÖµ
+	//è®¡ç®—é™é›¨å€¼
 	void CalculateRain(int32 width,int32 height);
 
 	UFUNCTION(BlueprintCallable)
@@ -188,10 +188,10 @@ private:
 private:
 	bool CheckRadius(float x,float y);
 
-	//Î¬ÅµÍ¼
+	//ç»´è¯ºå›¾
 	void Voronoi(int width,int height,int numVoronoiPoint);
 
-	// »ñÈ¡Ëæ»ú±ßÔµµã
+	// è·å–éšæœºè¾¹ç¼˜ç‚¹
 	FVector2D GetEdgePoint(int width, int height);
 
 };

@@ -33,7 +33,8 @@ public:
 
     ARTSCommanderBase* Commander;
 
-    float EdgeThickness;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    float EdgeThickness = 20;
 
 public:
     virtual void BeginPlay();

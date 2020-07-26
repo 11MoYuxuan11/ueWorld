@@ -107,9 +107,32 @@ void ARTSHUDBase::ReceiveDrawHUD(int32 SizeX, int32 SizeY)
 
 void ARTSHUDBase::HitBoxEndCursorOver(FName name)
 {
-	
+	TArray<FString>StringArray;
+	name.ToString().ParseIntoArray(StringArray,TEXT("."),false);
+	TArray<FString>ElementIDs;
+	int32 ElementID;
+	ElementIDs = StringArray;
+	ElementID = FCString::Atoi(*StringArray[1]);
+
+	if (StringArray[0] == "EdgeBox")
+	{
+		bMoveCamera = false;
+		ResetEdgeVariables();
+	}
 }
 
 void ARTSHUDBase::HitBoxBeginCursorOver(FName name)
 {
-}
+	TArray<FString>StringArray;
+	name.ToString().ParseIntoArray(StringArray, TEXT("."), false);
+	TArray<FString>ElementIDs;
+	int32 ElementID;
+	ElementIDs = StringArray;
+	ElementID = FCString::Atoi(*StringArray[1]);
+
+	if (StringArray[0] == "EdgeBox")
+	{
+		bMoveCamera = true;
+		GetOwningPlayerController()->SetInputMode(FInputModeGameAndUI());
+	}
+}	

@@ -48,7 +48,7 @@ public:
 
     void ResetEdgeVariables();
 
-    virtual void ReceiveDrawHUD(int32 SizeX, int32 SizeY);
-    virtual void HitBoxEndCursorOver(FName name);
-    virtual void HitBoxBeginCursorOver(FName name);
+    virtual void DrawHUD();
+    virtual void NotifyHitBoxEndCursorOver(FName name) override;
+    virtual void NotifyHitBoxBeginCursorOver(FName name) override;
 };

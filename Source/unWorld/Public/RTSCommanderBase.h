@@ -23,6 +23,9 @@ public:
 
 	bool bRotateCamera;
 	float RotateSpeed = 2.0;
+	
+	UPROPERTY(BlueprintReadWrite,EditAnywhere)
+	float MovementSpeed = 10.0;
 
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* RTSCameraComponent;

@@ -2,6 +2,7 @@
 
 
 #include "RTSCommanderBase.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 ARTSCommanderBase::ARTSCommanderBase()
@@ -53,9 +54,18 @@ void ARTSCommanderBase::Move_YAxis(float AxisValue)
 
 void ARTSCommanderBase::MoveForward(float AxisValue) 
 {
+	auto addAmount = (AxisValue + EdgeForwardAxis) * MovementSpeed;
+	auto v = FRotator(0,0,RTSCameraComponent->GetComponentRotation().Yaw) ;
 	
+	FVector newLocation = addAmount * UKismetMathLibrary::GetForwardVector(v) + GetActorLocation();
+	SetActorLocation(newLocation);
 }
 
 void ARTSCommanderBase::MoveRight(float AxisValue)
 {
+	auto addAmount = (AxisValue + EdgeRightAxis) * MovementSpeed;
+	auto v = FRotator(0, 0, RTSCameraComponent->GetComponentRotation().Yaw);
+
+	FVector newLocation = addAmount * UKismetMathLibrary::GetRightVector(v) + GetActorLocation();
+	SetActorLocation(newLocation);
 }

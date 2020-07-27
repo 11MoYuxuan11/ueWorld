@@ -4,6 +4,7 @@
 #include "RTSHUDBase.h"
 #include "RTSPlayerControllerBase.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Engine/Canvas.h"
 
 void ARTSHUDBase::BeginPlay()
 {
@@ -30,24 +31,24 @@ void ARTSHUDBase::DrawHitAllHitboxes(int32 HitBoxID, FVector2D Location, FVector
 		FVector2D size;
 		switch (i)
 		{
-		//Top
-		case 0:
-		position = Location;
-		size = FVector2D(Size.X-EdgeThickness,EdgeThickness);
-		//Right
-		case 1:
-		position = FVector2D(Location.X + Size.X - EdgeThickness,Location.Y+EdgeThickness);
-		size = FVector2D(EdgeThickness, Size.Y - EdgeThickness);
-		//Botton
-		case 2:
-		position = FVector2D(Location.X + EdgeThickness , Location.X + Size.X - EdgeThickness);
-		size = FVector2D(Size.X - EdgeThickness, EdgeThickness);
-		//Left
-	    case 3:
-		position = FVector2D(Location.X,Location.Y + EdgeThickness);
-		size = FVector2D(EdgeThickness, Size.Y - EdgeThickness);
-		default:
-			break;
+			//Top
+			case 0:
+			position = Location;
+			size = FVector2D(Size.X-EdgeThickness,EdgeThickness);
+			//Right
+			case 1:
+			position = FVector2D(Location.X + Size.X - EdgeThickness,Location.Y+EdgeThickness);
+			size = FVector2D(EdgeThickness, Size.Y - EdgeThickness);
+			//Botton
+			case 2:
+			position = FVector2D(Location.X + EdgeThickness , Location.X + Size.X - EdgeThickness);
+			size = FVector2D(Size.X - EdgeThickness, EdgeThickness);
+			//Left
+			case 3:
+			position = FVector2D(Location.X,Location.Y + EdgeThickness);
+			size = FVector2D(EdgeThickness, Size.Y - EdgeThickness);
+			default:
+				break;
 		}
 		DrawHitBox(position,size,name,bConsumeInput,Priority,bLocalShowOverlays,OverlayColor);
 	}
@@ -88,9 +89,11 @@ void ARTSHUDBase::ResetEdgeVariables()
 	Commander->EdgeRightAxis = 0;
 }
 
-void ARTSHUDBase::ReceiveDrawHUD(int32 SizeX, int32 SizeY)
+void ARTSHUDBase::DrawHUD()
 {
-	ScreenRes = FVector2D(SizeX,SizeY);
+	Super::DrawHUD();
+
+	ScreenRes = FVector2D(Canvas->SizeX, Canvas->SizeY);
 	DrawAllEdgeHitboxes();
 	if (bIsDrawing)
 	{
@@ -105,8 +108,9 @@ void ARTSHUDBase::ReceiveDrawHUD(int32 SizeX, int32 SizeY)
 	}
 }
 
-void ARTSHUDBase::HitBoxEndCursorOver(FName name)
+void ARTSHUDBase::NotifyHitBoxEndCursorOver(FName name)
 {
+	Super::NotifyHitBoxEndCursorOver(name);
 	TArray<FString>StringArray;
 	name.ToString().ParseIntoArray(StringArray,TEXT("."),false);
 	TArray<FString>ElementIDs;
@@ -121,8 +125,10 @@ void ARTSHUDBase::HitBoxEndCursorOver(FName name)
 	}
 }
 
-void ARTSHUDBase::HitBoxBeginCursorOver(FName name)
+void ARTSHUDBase::NotifyHitBoxBeginCursorOver(FName name)
 {
+	Super::NotifyHitBoxBeginCursorOver(name);
+
 	TArray<FString>StringArray;
 	name.ToString().ParseIntoArray(StringArray, TEXT("."), false);
 	TArray<FString>ElementIDs;

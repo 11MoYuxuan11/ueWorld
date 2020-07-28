@@ -38,6 +38,10 @@ void ARTSCommanderBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis("MouseY",this,&ARTSCommanderBase::Move_YAxis);
 	PlayerInputComponent->BindAxis("MoveForward",this,&ARTSCommanderBase::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight",this,&ARTSCommanderBase::MoveRight);
+
+	PlayerInputComponent->BindAction("LeftMouseClick",IE_Pressed,this,&ARTSCommanderBase::LeftMouseDown);
+	PlayerInputComponent->BindAction("LeftMouseClick", IE_Released, this, &ARTSCommanderBase::LeftMouseUp);
+
 }
 
 void ARTSCommanderBase::Move_XAxis(float AxisValue)
@@ -68,4 +72,54 @@ void ARTSCommanderBase::MoveRight(float AxisValue)
 
 	FVector newLocation = addAmount * UKismetMathLibrary::GetRightVector(v) + GetActorLocation();
 	SetActorLocation(newLocation);
+}
+
+void ARTSCommanderBase::LeftMouseDown(FKey key) {
+	//TODO 取消当前选择
+
+
+	if (ConstructionMode)
+	{
+		//TODO If preview actor is valid place new building
+
+		if (true)
+		{
+			
+		}
+	}
+	else {
+
+	}
+}
+
+void ARTSCommanderBase::LeftMouseUp(FKey key) {
+
+}
+
+void ARTSCommanderBase::GetSelectionActor()
+{
+}
+
+void ARTSCommanderBase::SetSelectionRingsLocation(int32 DistanceBetweenUnit, bool bChangeVisibility)
+{
+}
+
+void ARTSCommanderBase::SetUnitsLocation(int32 DistanceBetweenUnits)
+{
+}
+
+void ARTSCommanderBase::SetSelectionRingsVisibility(bool bVisibility)
+{
+}
+
+void ARTSCommanderBase::DestorySelectedUnit()
+{
+}
+
+void ARTSCommanderBase::CheckForHit(bool& bAllowPlace, FHitResult& HitResultOut, FHitResult HitResultIn)
+{
+}
+
+void ARTSCommanderBase::CheckForSelectedActor(FHitResult HitResultIn)
+{
 }

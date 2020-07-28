@@ -30,6 +30,8 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* RTSCameraComponent;
 
+	bool ConstructionMode;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -45,4 +47,25 @@ public:
 	void Move_YAxis(float AxisValue);
 	void MoveForward(float AxisValue);
 	void MoveRight(float AxisValue);
+
+	void LeftMouseDown(FKey key);
+	void LeftMouseUp(FKey key);
+
+
+	UFUNCTION(BlueprintCallable, Category="Selection")
+	void GetSelectionActor();
+
+	UFUNCTION(BlueprintCallable, Category="Units")
+	void SetSelectionRingsLocation(int32 DistanceBetweenUnit,bool bChangeVisibility);
+	UFUNCTION(BlueprintCallable, Category="Units")
+	void SetUnitsLocation(int32 DistanceBetweenUnits);
+	UFUNCTION(BlueprintCallable, Category = "Units")
+	void SetSelectionRingsVisibility(bool bVisibility);
+	UFUNCTION(BlueprintCallable, Category = "Units")
+	void DestorySelectedUnit();
+
+	UFUNCTION(BlueprintCallable, Category = "Trace")
+	void CheckForHit(bool& bAllowPlace, FHitResult& HitResultOut,FHitResult HitResultIn);
+	UFUNCTION(BlueprintCallable, Category = "Trace")
+	void CheckForSelectedActor(FHitResult HitResultIn);
 };

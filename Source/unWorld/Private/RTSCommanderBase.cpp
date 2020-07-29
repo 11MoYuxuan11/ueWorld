@@ -11,15 +11,17 @@ ARTSCommanderBase::ARTSCommanderBase()
 	PrimaryActorTick.bCanEverTick = true;
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
+	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring"));
+	SpringArmComponent->SetupAttachment(RootComponent);
 	RTSCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	RTSCameraComponent->SetupAttachment(RootComponent);
+	RTSCameraComponent->SetupAttachment(SpringArmComponent);
+
 }
 
 // Called when the game starts or when spawned
 void ARTSCommanderBase::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
@@ -92,7 +94,20 @@ void ARTSCommanderBase::LeftMouseDown(FKey key) {
 	}
 }
 
-void ARTSCommanderBase::LeftMouseUp(FKey key) {
+void ARTSCommanderBase::LeftMouseUp(FKey key) 
+{
+	//TODO DeleteBuildings
+
+	if (bSingleClick)
+	{
+		CheckForSelectedActor(HoverOverHitResult);
+	}
+	else
+	{
+
+	}
+
+	//TODO Set the selected units
 
 }
 

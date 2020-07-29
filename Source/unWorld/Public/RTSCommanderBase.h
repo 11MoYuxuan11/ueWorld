@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "RTSCommanderBase.generated.h"
 
 UCLASS()
@@ -29,8 +30,14 @@ public:
 
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* RTSCameraComponent;
+	UPROPERTY(VisibleAnywhere)
+	USpringArmComponent* SpringArmComponent;
 
 	bool ConstructionMode;
+
+	bool bSingleClick;
+
+	FHitResult HoverOverHitResult;
 
 protected:
 	// Called when the game starts or when spawned

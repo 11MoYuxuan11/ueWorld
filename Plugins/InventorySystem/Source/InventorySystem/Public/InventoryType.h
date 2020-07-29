@@ -120,6 +120,60 @@ struct INVENTORYSYSTEM_API FItemData
 
 };
 
+USTRUCT(BlueprintType)
+struct INVENTORYSYSTEM_API FInventoryItem 
+{
+	GENERATED_BODY()
+
+	//FInventoryItem(FName ID	, UTexture2D* Icon, FName Name,FText Des,int32 Quality
+	//		,int32 ItemType,int32 MaxStackSize, bool IsDroppable)
+	//	: ID(ID)
+	//	, Icon(Icon)
+	//	, Name(Name)
+	//	, Description(Description)
+	//	, Quality(Quality)
+	//	, ItemType(ItemType)
+	//	, MaxStackSize(MaxStackSize)
+	//	, IsDroppable(IsDroppable)
+	//{}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
+	FName ID;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
+	UTexture2D* Icon;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
+	FName Name;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
+	FText Description;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
+	int32 Quality;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
+	int32 ItemType;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
+	int32 Amount;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
+	int32 MaxStackSize;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Item)
+	bool IsDroppable;
+
+	void UpdateItemData(const FInventoryItem& Other, int32 MaxCount, int32 MaxLevel = 1)
+	{
+		if (MaxCount <= 0)
+		{
+			MaxCount = MAX_int32;
+		}
+
+		if (MaxLevel <= 0)
+		{
+			MaxLevel = MAX_int32;
+		}
+
+		Amount = FMath::Clamp(Amount + Other.Amount, 1, MaxCount);
+
+	}
+};
+
+
 /** Delegate called when an inventory item changes */
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInventoryItemChanged, bool, bAdded, UItemDataAsset*, Item);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnInventoryItemChangedNative, bool, UItemDataAsset*);

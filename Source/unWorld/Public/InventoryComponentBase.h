@@ -7,6 +7,8 @@
 #include "InventoryComponentBase.generated.h"
 
 
+
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent),Blueprintable )
 class UNWORLD_API UInventoryComponentBase : public UActorComponent
 {
@@ -15,6 +17,11 @@ class UNWORLD_API UInventoryComponentBase : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UInventoryComponentBase();
+
+	FMap<,FItemDataAsset> SlottedItems;
+
+	FMap<int32,FInventoryItem> InventoryItem;
+
 
 protected:
 	// Called when the game starts

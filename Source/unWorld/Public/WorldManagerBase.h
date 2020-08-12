@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ChunkBase.h"
+#include "Chunk.h"
 #include "WorldManagerBase.generated.h"
 
 UENUM(BlueprintType)
@@ -132,7 +132,7 @@ public:
 	int32 WorldSize;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class AChunkBase> ChunkClass; 
+	TSubclassOf<class AChunk> ChunkClass; 
 
 	FString LoadingMessage = "";
 	float LoadingProgress = 0.f;

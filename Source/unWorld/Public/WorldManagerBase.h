@@ -142,7 +142,7 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	//每个Chunk都包含16*16*256个block
-	TArray<AChunkBase*> chunks;
+	TArray<AChunk*> chunks;
 
 protected:
 	// Called when the game starts or when spawned

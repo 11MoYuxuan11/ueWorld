@@ -96,16 +96,16 @@ void AWorldManagerBase::AddChunk()
 				{
 					auto spawnTransform = FTransform();
 					chunkCords.Add(FVector2D(ChunkX + i, ChunkY + j));
-					auto deferredChunk = Cast<AChunkBase>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this,ChunkClass,spawnTransform));
+					auto deferredChunk = Cast<AChunk>(UGameplayStatics::BeginDeferredActorSpawnFromClass(this,ChunkClass,spawnTransform));
 
 					// 初始化传参
 					if (deferredChunk != nullptr)
 					{
-						deferredChunk->rabdinSeed = 0;
-						deferredChunk->voxelSize = VoxelSize;
-						deferredChunk->chunkElements = ChunkLineElement;
-						deferredChunk->chunkXindex = i;
-						deferredChunk->chunkYindex = j;
+						//deferredChunk->rabdinSeed = 0;
+						//deferredChunk->voxelSize = VoxelSize;
+						//deferredChunk->chunkElements = ChunkLineElement;
+						//deferredChunk->chunkXindex = i;
+						//deferredChunk->chunkYindex = j;
 
 						UGameplayStatics::FinishSpawningActor(deferredChunk, spawnTransform);
 					}

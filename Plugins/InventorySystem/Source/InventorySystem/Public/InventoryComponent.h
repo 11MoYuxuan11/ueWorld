@@ -21,65 +21,16 @@ public:
 	/** Map of all items owned by this player, from definition to data */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
 	//TArray<FInventoryItem> InventoryData;
-	TMap<UItemDataAsset*, FItemData> InventoryData;
+	TMap<int32, FInventoryItem> InventoryData;
 
 	/** Map of slot, from type/num to item, initialized from ItemSlotsPerType on RPGGameInstanceBase */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory)
 	TMap<FItemSlot, UItemDataAsset*> SlottedItems;
 
-
-
-
-
 public:
 	
 	//UFUNCTION(BlueprintCallable, Category = Inventory)
 	//void GetInventoryItems(TArray<FInventoryItem>& items);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 	/** Delegate called when an inventory item has been added or removed */
 	UPROPERTY(BlueprintAssignable, Category = Inventory)
